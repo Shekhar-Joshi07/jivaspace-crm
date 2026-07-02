@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color: #1b1715;
+    background: #fbfaf6;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    min-width: 320px;
+    min-height: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(216, 176, 79, 0.14), transparent 28%),
+      radial-gradient(circle at 0% 0%, rgba(89, 28, 28, 0.05), transparent 24%),
+      #fbfaf6;
+    color: #1b1715;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background: #f2dfac;
+    color: #351111;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-white shadow-card;
+  }
+
+  .field {
+    @apply block min-h-11 w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink-950 outline-none transition placeholder:text-ink-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-ink-400;
+  }
+
+  .field-label {
+    @apply mb-1.5 block text-sm font-semibold text-ink-800;
+  }
+
+  .btn {
+    @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold transition focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-[#3d1515] text-white shadow-sm hover:-translate-y-0.5 hover:bg-[#4f1b1b] focus:ring-[#e7c86a]/30;
+  }
+
+  .btn-secondary {
+    @apply btn border border-[#e6dcc9] bg-white text-ink-800 hover:border-[#d8b04f] hover:bg-[#fff7e3] focus:ring-[#e7c86a]/30;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-100;
+  }
+
+  .btn-ghost {
+    @apply btn px-3 text-ink-600 hover:bg-[#f6ede0] hover:text-ink-950 focus:ring-[#e7c86a]/30;
+  }
+
+  .icon-button {
+    @apply inline-grid h-10 w-10 shrink-0 place-items-center rounded-xl text-ink-600 transition hover:bg-[#f6ede0] hover:text-[#7f5b12] focus:outline-none focus:ring-4 focus:ring-[#e7c86a]/30;
+  }
+
+  .table-cell {
+    @apply border-b border-line px-4 py-3.5 text-sm text-ink-800;
+  }
+
+  .table-heading {
+    @apply border-b border-line bg-gray-50/80 px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-ink-600;
+  }
+}
+
+@layer utilities {
+  .crm-sidebar-link-active {
+    color: #351111;
+    background: #d8b04f;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: #bdcbc7;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8fa39e;
+  background-clip: padding-box;
+}
