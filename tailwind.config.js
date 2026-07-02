@@ -5,38 +5,38 @@ export default {
     extend: {
       colors: {
         ink: {
-          950: '#17201f',
-          800: '#263532',
-          600: '#60706c',
-          400: '#94a39f'
+          950: '#2d1b12',
+          800: '#4a3428',
+          600: '#765e50',
+          400: '#a89182'
         },
         brand: {
-          950: '#092c28',
-          900: '#0d3b36',
-          800: '#105048',
-          700: '#0b6c61',
-          600: '#0c8f80',
-          500: '#12a594',
-          100: '#d9f3ee',
-          50: '#effaf7'
+          950: '#572400',
+          900: '#773100',
+          800: '#9d4100',
+          700: '#c65300',
+          600: '#e76700',
+          500: '#ef7900',
+          100: '#ffe2c2',
+          50: '#fff6eb'
         },
         accent: {
-          600: '#dc6554',
-          500: '#e37766',
-          100: '#fbe5e0',
-          50: '#fff5f2'
+          600: '#d99a00',
+          500: '#f5b51b',
+          100: '#fff0bf',
+          50: '#fffaf0'
         },
-        canvas: '#f5f7f6',
-        line: '#dfe7e4'
+        canvas: '#fffaf5',
+        line: '#eedfd3'
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
         display: ['Manrope', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif']
       },
       boxShadow: {
-        card: '0 1px 2px rgba(13, 59, 54, 0.04), 0 12px 32px rgba(13, 59, 54, 0.06)',
-        lift: '0 18px 50px rgba(13, 59, 54, 0.14)',
-        sidebar: '10px 0 30px rgba(3, 28, 25, 0.12)'
+        card: '0 1px 2px rgba(87, 36, 0, 0.04), 0 12px 32px rgba(87, 36, 0, 0.08)',
+        lift: '0 18px 50px rgba(87, 36, 0, 0.16)',
+        sidebar: '10px 0 30px rgba(87, 36, 0, 0.16)'
       },
       animation: {
         'fade-in': 'fadeIn 240ms ease-out both',

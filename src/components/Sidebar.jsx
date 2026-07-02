@@ -91,7 +91,7 @@ const isItemActive = (item, pathname) => {
 const itemClass = isActive => [
   'group flex min-h-11 items-center gap-3 rounded-2xl px-3 text-sm font-semibold transition',
   isActive
-    ? 'bg-[#d8b04f] text-[#351111] shadow-[0_8px_20px_rgba(0,0,0,0.18)]'
+    ? 'bg-white text-brand-800 shadow-[0_8px_20px_rgba(87,36,0,0.2)]'
     : 'text-white/78 hover:bg-white/10 hover:text-white'
 ].join(' ');
 
@@ -102,15 +102,9 @@ export default function Sidebar({ open, onClose }) {
   return (
     <>
       {open ? <button aria-label="Close navigation" className="fixed inset-0 z-30 bg-black/40 backdrop-blur-[2px] lg:hidden" onClick={onClose} type="button" /> : null}
-      <aside className={`fixed inset-y-0 left-0 z-40 flex w-[300px] flex-col border-r border-white/8 bg-[#3d1515] text-white shadow-[18px_0_50px_rgba(46,12,12,0.36)] transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
-        <div className="flex h-[76px] items-center gap-3 border-b border-white/10 px-5">
-          <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#d8b04f] text-sm font-black text-[#351111] shadow-lg">
-            RE
-          </span>
-          <div className="min-w-0">
-            <strong className="block truncate font-display text-[15px] font-black tracking-wide">Real Estate CRM</strong>
-            <small className="block truncate text-[11px] font-medium text-white/55">Sales, inventory, and follow-ups</small>
-          </div>
+      <aside className={`fixed inset-y-0 left-0 z-40 flex w-[300px] flex-col border-r border-white/10 bg-gradient-to-b from-brand-500 to-brand-700 text-white shadow-sidebar transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
+        <div className="flex h-[132px] items-center border-b border-white/15 px-5">
+          <img alt="Jiva Space Realty" className="h-[110px] w-auto object-contain object-left" src="/jiva-space-logo.png" />
           <button aria-label="Close sidebar" className="ml-auto grid h-9 w-9 place-items-center rounded-xl text-white/65 hover:bg-white/10 hover:text-white lg:hidden" onClick={onClose} type="button">
             <ChevronRight size={18} />
           </button>
@@ -133,7 +127,7 @@ export default function Sidebar({ open, onClose }) {
                           <Icon size={17} strokeWidth={2.1} />
                         </span>
                         <span className="min-w-0 flex-1 truncate">{item.label}</span>
-                        {active ? <span className="h-2.5 w-2.5 rounded-full bg-[#d8b04f]" /> : null}
+                        {active ? <span className="h-2.5 w-2.5 rounded-full bg-brand-500" /> : null}
                       </NavLink>
                     );
                   })}
@@ -145,7 +139,7 @@ export default function Sidebar({ open, onClose }) {
 
         <div className="border-t border-white/10 p-3">
           <div className="mb-2 flex items-center gap-3 rounded-2xl bg-white/8 px-3 py-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#d8b04f] text-sm font-black text-[#351111]">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-sm font-black text-brand-700">
               {user?.name?.slice(0, 1)?.toUpperCase() || 'U'}
             </span>
             <span className="min-w-0">

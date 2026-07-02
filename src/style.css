@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    color: #1b1715;
-    background: #fbfaf6;
+    color: #2d1b12;
+    background: #fffaf5;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
   }
@@ -25,10 +25,10 @@
     min-height: 100vh;
     margin: 0;
     background:
-      radial-gradient(circle at 100% 0%, rgba(216, 176, 79, 0.14), transparent 28%),
-      radial-gradient(circle at 0% 0%, rgba(89, 28, 28, 0.05), transparent 24%),
-      #fbfaf6;
-    color: #1b1715;
+      radial-gradient(circle at 100% 0%, rgba(239, 121, 0, 0.12), transparent 28%),
+      radial-gradient(circle at 0% 0%, rgba(245, 181, 27, 0.08), transparent 24%),
+      #fffaf5;
+    color: #2d1b12;
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
@@ -45,8 +45,8 @@
   }
 
   ::selection {
-    background: #f2dfac;
-    color: #351111;
+    background: #ffe2c2;
+    color: #572400;
   }
 }
 
@@ -68,11 +68,11 @@
   }
 
   .btn-primary {
-    @apply btn bg-[#3d1515] text-white shadow-sm hover:-translate-y-0.5 hover:bg-[#4f1b1b] focus:ring-[#e7c86a]/30;
+    @apply btn bg-brand-500 text-white shadow-sm hover:-translate-y-0.5 hover:bg-brand-600 focus:ring-brand-100;
   }
 
   .btn-secondary {
-    @apply btn border border-[#e6dcc9] bg-white text-ink-800 hover:border-[#d8b04f] hover:bg-[#fff7e3] focus:ring-[#e7c86a]/30;
+    @apply btn border border-line bg-white text-ink-800 hover:border-brand-500 hover:bg-brand-50 focus:ring-brand-100;
   }
 
   .btn-danger {
@@ -80,11 +80,11 @@
   }
 
   .btn-ghost {
-    @apply btn px-3 text-ink-600 hover:bg-[#f6ede0] hover:text-ink-950 focus:ring-[#e7c86a]/30;
+    @apply btn px-3 text-ink-600 hover:bg-brand-50 hover:text-brand-800 focus:ring-brand-100;
   }
 
   .icon-button {
-    @apply inline-grid h-10 w-10 shrink-0 place-items-center rounded-xl text-ink-600 transition hover:bg-[#f6ede0] hover:text-[#7f5b12] focus:outline-none focus:ring-4 focus:ring-[#e7c86a]/30;
+    @apply inline-grid h-10 w-10 shrink-0 place-items-center rounded-xl text-ink-600 transition hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-100;
   }
 
   .table-cell {
@@ -98,8 +98,8 @@
 
 @layer utilities {
   .crm-sidebar-link-active {
-    color: #351111;
-    background: #d8b04f;
+    color: #572400;
+    background: #ffffff;
   }
 }
 
@@ -122,11 +122,11 @@
 ::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
-  background: #bdcbc7;
+  background: #d8bdaa;
   background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #8fa39e;
+  background: #b98d70;
   background-clip: padding-box;
 }

@@ -145,7 +145,7 @@ export default function CalendarView({ events = [], loading = false, initialView
     <article className="card overflow-hidden">
       <div className="flex flex-col gap-4 border-b border-line p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
         <div className="flex items-center gap-2">
-          <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#f2dfac] text-[#351111]">
+          <span className="grid h-10 w-10 place-items-center rounded-2xl bg-brand-100 text-brand-800">
             <CalendarDays size={18} />
           </span>
           <div>
@@ -161,7 +161,7 @@ export default function CalendarView({ events = [], loading = false, initialView
           <div className="rounded-2xl border border-line bg-white p-1">
             {['month', 'week', 'day'].map(option => (
               <button
-                className={`min-h-9 rounded-xl px-3 text-sm font-bold transition ${view === option ? 'bg-[#3d1515] text-white' : 'text-ink-600 hover:bg-[#f6ede0]'}`}
+                className={`min-h-9 rounded-xl px-3 text-sm font-bold transition ${view === option ? 'bg-brand-500 text-white' : 'text-ink-600 hover:bg-brand-50'}`}
                 key={option}
                 onClick={() => setView(option)}
                 type="button"
@@ -179,7 +179,7 @@ export default function CalendarView({ events = [], loading = false, initialView
 
       {loading ? (
         <div className="p-6">
-          <div className="grid min-h-48 place-items-center rounded-3xl border border-dashed border-line bg-[#fcfbf7] text-sm font-semibold text-ink-400">
+          <div className="grid min-h-48 place-items-center rounded-3xl border border-dashed border-line bg-canvas text-sm font-semibold text-ink-400">
             Loading calendar…
           </div>
         </div>
@@ -187,7 +187,7 @@ export default function CalendarView({ events = [], loading = false, initialView
         <div className="p-4 sm:p-6">
           <div className="grid grid-cols-7 gap-px overflow-hidden rounded-3xl border border-line bg-line">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <div className="bg-[#fcfbf7] px-3 py-3 text-xs font-extrabold uppercase tracking-[0.16em] text-ink-500" key={day}>{day}</div>
+              <div className="bg-canvas px-3 py-3 text-xs font-extrabold uppercase tracking-[0.16em] text-ink-500" key={day}>{day}</div>
             ))}
             {monthGrid.map(date => {
               const key = localKey(date);
@@ -196,13 +196,13 @@ export default function CalendarView({ events = [], loading = false, initialView
               const isToday = key === localKey(today);
               return (
                 <div className={`min-h-36 bg-white p-2 ${isCurrentMonth ? '' : 'opacity-40'}`} key={`${key}-${date.getTime()}`}>
-                  <div className={`mb-2 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${isToday ? 'bg-[#3d1515] text-white' : 'text-ink-700'}`}>
+                  <div className={`mb-2 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${isToday ? 'bg-brand-500 text-white' : 'text-ink-700'}`}>
                     {date.getDate()}
                   </div>
                   <div className="space-y-1.5">
                     {dayEvents.slice(0, 2).map(event => <EventChip event={event} key={`${key}-${event.leadId}`} />)}
                     {dayEvents.length > 2 ? (
-                      <div className="rounded-xl bg-[#f7f1e2] px-2.5 py-2 text-xs font-bold text-[#7a5a14]">
+                      <div className="rounded-xl bg-brand-50 px-2.5 py-2 text-xs font-bold text-brand-800">
                         +{dayEvents.length - 2} more
                       </div>
                     ) : null}

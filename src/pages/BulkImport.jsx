@@ -44,9 +44,9 @@ export default function BulkImport() {
                 assignedTo, followUpDate, remarks
               </p>
             </div>
-            <label className="grid min-h-60 cursor-pointer place-items-center rounded-3xl border-2 border-dashed border-line bg-white p-6 text-center transition hover:border-[#d8b04f] hover:bg-[#fffaf0]">
+            <label className="grid min-h-60 cursor-pointer place-items-center rounded-3xl border-2 border-dashed border-line bg-white p-6 text-center transition hover:border-brand-500 hover:bg-brand-50">
               <span>
-                <FileSpreadsheet className="mx-auto text-[#8b6520]" size={34} />
+                <FileSpreadsheet className="mx-auto text-brand-700" size={34} />
                 <strong className="mt-3 block text-base text-ink-950">{file?.name || 'Choose an Excel or CSV file'}</strong>
                 <span className="mt-1 block text-sm text-ink-500">XLSX, XLS, or CSV files are supported.</span>
               </span>

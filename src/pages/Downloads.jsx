@@ -150,12 +150,12 @@ export default function Downloads() {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {buttons.map(button => (
           <button
-            className="card flex min-h-40 flex-col items-start gap-4 p-5 text-left transition hover:border-[#d8b04f] hover:bg-[#fffaf0]"
+            className="card flex min-h-40 flex-col items-start gap-4 p-5 text-left transition hover:border-brand-500 hover:bg-brand-50"
             key={button.label}
             onClick={button.onClick}
             type="button"
           >
-            <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#3d1515] text-[#f4d06f]">
+            <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-500 text-white">
               <button.icon size={22} />
             </span>
             <span>

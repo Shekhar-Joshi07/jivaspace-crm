@@ -71,7 +71,7 @@ function SectionPage({ title, description }) {
   return (
     <div className="animate-fade-in">
       <div className="card p-6 sm:p-8">
-        <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#8b6520]">Real Estate CRM</p>
+        <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand-700">Real Estate CRM</p>
         <h1 className="mt-2 font-display text-2xl font-black text-ink-950">{title}</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-600">{description}</p>
       </div>

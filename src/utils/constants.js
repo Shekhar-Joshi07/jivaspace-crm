@@ -91,7 +91,7 @@ export const STATUS_STYLES = {
   Inactive: 'bg-gray-100 text-gray-600 ring-gray-200'
 };
 
-export const CHART_COLORS = ['#0c8f80', '#315db7', '#7564bf', '#d69c31', '#23916d', '#e37766', '#c6504b', '#64736f'];
+export const CHART_COLORS = ['#ef7900', '#f5b51b', '#c65300', '#ff9d3f', '#9d4100', '#f7c65c', '#e15f2f', '#8b6a55'];
 
 export const SUPERADMIN_ROLES = ['superadmin'];
 export const ADMIN_ROLES = ['superadmin', 'admin'];

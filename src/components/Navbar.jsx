@@ -49,21 +49,21 @@ export default function Navbar({ onMenuClick }) {
   };
 
   return (
-    <header className="sticky top-0 z-20 flex h-[76px] items-center border-b border-[#e8e0d2] bg-white/95 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-20 flex h-[76px] items-center border-b border-line bg-white/95 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
       <button aria-label="Open navigation" className="icon-button mr-2 lg:hidden" onClick={onMenuClick} type="button">
         <Menu size={21} />
       </button>
 
       <div className="min-w-0">
         <p className="truncate font-display text-lg font-black tracking-tight text-ink-950">{title}</p>
-        <p className="hidden text-xs font-medium text-ink-500 sm:block">Maroon sidebar, gold active states, and a clean real-estate workspace.</p>
+        <p className="hidden text-xs font-medium text-ink-500 sm:block">A focused workspace for sales, inventory, and follow-ups.</p>
       </div>
 
       <form className="relative ml-auto hidden w-full max-w-sm xl:block" onSubmit={submitSearch}>
         <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" size={17} />
         <input
           aria-label="Search leads"
-          className="field min-h-10 bg-[#fbfaf6] pl-9"
+          className="field min-h-10 bg-canvas pl-9"
           onChange={event => setSearch(event.target.value)}
           placeholder="Search leads"
           value={search}
@@ -74,8 +74,8 @@ export default function Navbar({ onMenuClick }) {
         <Bell size={20} />
       </Link>
 
-      <div className="ml-2 hidden items-center gap-2 rounded-2xl border border-[#eadfca] bg-[#fffaf0] px-3 py-2 lg:flex">
-        <span className="grid h-8 w-8 place-items-center rounded-xl bg-[#3d1515] text-xs font-black text-[#f4d06f]">
+      <div className="ml-2 hidden items-center gap-2 rounded-2xl border border-brand-100 bg-brand-50 px-3 py-2 lg:flex">
+        <span className="grid h-8 w-8 place-items-center rounded-xl bg-brand-500 text-xs font-black text-white">
           {user?.name?.slice(0, 1)?.toUpperCase() || 'U'}
         </span>
         <span className="min-w-0">
@@ -84,7 +84,7 @@ export default function Navbar({ onMenuClick }) {
         </span>
       </div>
 
-      <Link className="ml-2 grid h-10 w-10 place-items-center rounded-xl border border-[#eadfca] bg-white text-ink-600 lg:hidden" to="/settings">
+      <Link className="ml-2 grid h-10 w-10 place-items-center rounded-xl border border-brand-100 bg-white text-ink-600 lg:hidden" to="/settings">
         <UserCircle2 size={19} />
       </Link>
     </header>

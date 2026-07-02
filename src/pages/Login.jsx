@@ -33,7 +33,7 @@ export default function Login() {
     <AuthLayout title="Sign in to your workspace" subtitle="Use your CRM account to continue where your team left off.">
       <form className="space-y-5" onSubmit={submit}>
         <FormField label="Email address" required>
-          <input autoComplete="email" autoFocus className="field" onChange={event => setForm({ ...form, email: event.target.value })} placeholder="you@company.com" required type="email" value={form.email} />
+          <input autoComplete="email" autoFocus className="field" onChange={event => setForm({ ...form, email: event.target.value })} placeholder="Write your email" required type="email" value={form.email} />
         </FormField>
         <FormField label="Password" required>
           <span className="relative block">

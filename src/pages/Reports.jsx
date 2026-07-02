@@ -118,16 +118,16 @@ export default function Reports() {
                 <AreaChart data={monthlyLeads}>
                   <defs>
                     <linearGradient id="leadArea" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="5%" stopColor="#3d1515" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#3d1515" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#ef7900" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#ef7900" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid stroke="#e7ecea" strokeDasharray="4 4" vertical={false} />
                   <XAxis axisLine={false} dataKey="label" fontSize={11} tickLine={false} />
                   <YAxis axisLine={false} allowDecimals={false} fontSize={11} tickLine={false} />
                   <Tooltip />
-                  <Area dataKey="leads" fill="url(#leadArea)" name="Leads" stroke="#3d1515" strokeWidth={2.5} type="monotone" />
-                  <Area dataKey="converted" fill="transparent" name="Converted" stroke="#d8b04f" strokeWidth={2} type="monotone" />
+                  <Area dataKey="leads" fill="url(#leadArea)" name="Leads" stroke="#ef7900" strokeWidth={2.5} type="monotone" />
+                  <Area dataKey="converted" fill="transparent" name="Converted" stroke="#f5b51b" strokeWidth={2} type="monotone" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>

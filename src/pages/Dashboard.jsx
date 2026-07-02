@@ -112,8 +112,8 @@ export default function Dashboard() {
           <h2 className="font-display text-lg font-extrabold text-ink-950">Quick focus</h2>
           <p className="mt-1 text-sm text-ink-600">Use the dashboard to keep follow-ups moving and bookings visible.</p>
           <div className="mt-5 grid gap-3">
-            <div className="rounded-2xl bg-[#f8f1df] p-4">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8d6a19]">Lead flow</p>
+            <div className="rounded-2xl bg-brand-50 p-4">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-700">Lead flow</p>
               <p className="mt-2 text-sm leading-6 text-ink-700">Calling and follow-up leads need the fastest attention.</p>
             </div>
             <div className="rounded-2xl border border-line bg-white p-4">
@@ -127,15 +127,15 @@ export default function Dashboard() {
           <h2 className="font-display text-lg font-extrabold text-ink-950">Next action</h2>
           <p className="mt-1 text-sm text-ink-600">Jump to the work that matters next.</p>
           <div className="mt-5 space-y-2">
-            <Link className="flex items-center justify-between rounded-2xl bg-[#3d1515] p-4 text-sm font-bold text-white transition hover:bg-[#4d1919]" to="/lead-pending">
+            <Link className="flex items-center justify-between rounded-2xl bg-brand-500 p-4 text-sm font-bold text-white transition hover:bg-brand-600" to="/lead-pending">
               <span>Review pending leads</span>
               <ArrowRight size={16} />
             </Link>
-            <Link className="flex items-center justify-between rounded-2xl border border-line p-4 text-sm font-bold text-ink-800 transition hover:border-[#d8b04f] hover:bg-[#fff7e3]" to="/site-visits">
+            <Link className="flex items-center justify-between rounded-2xl border border-line p-4 text-sm font-bold text-ink-800 transition hover:border-brand-500 hover:bg-brand-50" to="/site-visits">
               <span>Open site visits</span>
               <ArrowRight size={16} />
             </Link>
-            <Link className="flex items-center justify-between rounded-2xl border border-line p-4 text-sm font-bold text-ink-800 transition hover:border-[#d8b04f] hover:bg-[#fff7e3]" to="/bookings">
+            <Link className="flex items-center justify-between rounded-2xl border border-line p-4 text-sm font-bold text-ink-800 transition hover:border-brand-500 hover:bg-brand-50" to="/bookings">
               <span>Check bookings</span>
               <ArrowRight size={16} />
             </Link>
