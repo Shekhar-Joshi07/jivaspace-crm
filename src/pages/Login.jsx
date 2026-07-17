@@ -1,7 +1,7 @@
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
 import { FormField } from '../components/UI';
 import { getErrorMessage } from '../api/axios';
@@ -11,7 +11,7 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ username: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -32,8 +32,8 @@ export default function Login() {
   return (
     <AuthLayout title="Sign in to your workspace" subtitle="Use your CRM account to continue where your team left off.">
       <form className="space-y-5" onSubmit={submit}>
-        <FormField label="Email address" required>
-          <input autoComplete="email" autoFocus className="field" onChange={event => setForm({ ...form, email: event.target.value })} placeholder="Write your email" required type="email" value={form.email} />
+        <FormField label="Username" required>
+          <input autoComplete="username" autoFocus className="field" onChange={event => setForm({ ...form, username: event.target.value })} placeholder="Enter your username" required value={form.username} />
         </FormField>
         <FormField label="Password" required>
           <span className="relative block">
@@ -43,14 +43,10 @@ export default function Login() {
             </button>
           </span>
         </FormField>
-        <div className="flex justify-end">
-          <Link className="text-sm font-bold text-brand-700 hover:text-brand-900" to="/forgot-password">Forgot password?</Link>
-        </div>
         <button className="btn-primary w-full" disabled={busy} type="submit">
-          <LogIn size={18} /> {busy ? 'Signing in…' : 'Sign in'}
+          <LogIn size={18} /> {busy ? 'Signing in...' : 'Sign in'}
         </button>
       </form>
-      <p className="mt-6 text-center text-sm text-ink-600">Setting up the workspace? <Link className="font-bold text-brand-700" to="/register">Create the first account</Link></p>
     </AuthLayout>
   );
 }

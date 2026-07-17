@@ -10,6 +10,7 @@ import {
   ListChecks,
   LogOut,
   MenuSquare,
+  HousePlus,
   Users2,
   UserRoundPlus
 } from 'lucide-react';
@@ -45,6 +46,10 @@ const sections = [
     items: [{ label: 'My Teams', to: '/teams', icon: MenuSquare, roles: ADMIN_ROLES }]
   },
   {
+    title: 'Master',
+    items: [{ label: 'Property Listings', to: '/property-listings', icon: HousePlus, roles: ADMIN_ROLES }]
+  },
+  {
     title: 'Project',
     items: [
       { label: 'Project', to: '/projects', icon: Building2, roles: ADMIN_ROLES },
@@ -58,7 +63,6 @@ const sections = [
       { label: 'Booking', to: '/bookings', icon: ListChecks, roles: CRM_ROLES },
       { label: 'Download', to: '/download', icon: Download, roles: ADMIN_ROLES },
       { label: 'Report', to: '/reports', icon: Bookmark, roles: ADMIN_ROLES },
-      { label: 'People Report', to: '/reports/people', icon: Users2, roles: ADMIN_ROLES },
       { label: 'Lead Transfer Logs', to: '/lead-transfer-logs', icon: FileClock, roles: ADMIN_ROLES }
     ]
   }
@@ -79,6 +83,10 @@ const isItemActive = (item, pathname) => {
   if (targetPath === '/leads') {
     return currentPath === '/leads'
       || (currentPath.startsWith('/leads/') && currentPath !== '/leads/create');
+  }
+
+  if (targetPath === '/users') {
+    return currentPath === '/users';
   }
 
   if (item.end) {

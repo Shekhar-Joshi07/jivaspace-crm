@@ -19,6 +19,7 @@ const LeadResponses = lazy(() => import('./pages/LeadResponses'));
 const LeadTransfer = lazy(() => import('./pages/LeadTransfer'));
 const Leads = lazy(() => import('./pages/Leads'));
 const PropertyInventory = lazy(() => import('./pages/PropertyInventory'));
+const PropertyListings = lazy(() => import('./pages/PropertyListings'));
 const Login = lazy(() => import('./pages/Login'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const Notifications = lazy(() => import('./pages/Notifications'));
@@ -166,6 +167,14 @@ export default function App() {
               </RoleRoute>
             )}
             path="property-inventory"
+          />
+          <Route
+            element={(
+              <RoleRoute roles={ADMIN_ROLES}>
+                <PropertyListings />
+              </RoleRoute>
+            )}
+            path="property-listings"
           />
           <Route path="site-visits" element={<SiteVisits />} />
           <Route path="bookings" element={<Bookings />} />

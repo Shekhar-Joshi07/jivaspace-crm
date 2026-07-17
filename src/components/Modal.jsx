@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 export default function Modal({
@@ -27,16 +28,16 @@ export default function Modal({
   if (!open) return null;
   const widths = { sm: 'max-w-md', md: 'max-w-2xl', lg: 'max-w-4xl', xl: 'max-w-6xl' };
 
-  return (
-    <div className="fixed inset-0 z-50 grid items-end bg-ink-950/45 p-0 backdrop-blur-sm sm:items-center sm:p-5" onMouseDown={onClose}>
+  return createPortal(
+    <div className="fixed inset-0 z-[60] grid items-end bg-ink-950/45 p-0 backdrop-blur-sm sm:items-center sm:p-5" onMouseDown={onClose}>
       <section
         aria-labelledby="modal-title"
         aria-modal="true"
-        className={`max-h-[92vh] w-full ${widths[size] || widths.md} animate-slide-up overflow-hidden rounded-t-3xl bg-white shadow-lift sm:mx-auto sm:rounded-3xl`}
+        className={`flex max-h-[calc(100vh-2rem)] w-full ${widths[size] || widths.md} animate-slide-up flex-col overflow-hidden rounded-t-3xl bg-white shadow-lift sm:mx-auto sm:max-h-[calc(100vh-2.5rem)] sm:rounded-3xl`}
         role="dialog"
         onMouseDown={event => event.stopPropagation()}
       >
-        <header className="flex items-start justify-between gap-4 border-b border-line px-5 py-4 sm:px-6">
+        <header className="flex shrink-0 items-start justify-between gap-4 border-b border-line px-5 py-4 sm:px-6">
           <div>
             <h2 className="font-display text-xl font-extrabold text-ink-950" id="modal-title">{title}</h2>
             {description ? <p className="mt-1 text-sm text-ink-600">{description}</p> : null}
@@ -45,9 +46,10 @@ export default function Modal({
             <X size={20} />
           </button>
         </header>
-        <div className="max-h-[calc(92vh-145px)] overflow-y-auto px-5 py-5 sm:px-6">{children}</div>
-        {footer ? <footer className="flex flex-wrap justify-end gap-2 border-t border-line bg-gray-50/70 px-5 py-4 sm:px-6">{footer}</footer> : null}
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6">{children}</div>
+        {footer ? <footer className="flex shrink-0 flex-wrap justify-end gap-2 border-t border-line bg-gray-50/70 px-5 py-4 sm:px-6">{footer}</footer> : null}
       </section>
-    </div>
+    </div>,
+    document.body
   );
 }

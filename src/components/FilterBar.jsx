@@ -11,7 +11,7 @@ export default function FilterBar({
 }) {
   return (
     <section className="card mb-4 p-4">
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))_auto]">
+      <div className="grid items-end gap-3 lg:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))_auto]">
         <label className="relative block">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400" size={18} />
           <input

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { FormField } from './UI';
-import { LEAD_STATUSES, LEAD_SOURCES, PRIORITIES } from '../utils/constants';
+import { LEAD_STATUSES, LEAD_SOURCES, PRIORITIES, PROPERTY_TYPES } from '../utils/constants';
 import { toDateInput } from '../utils/formatDate';
 
 const initialState = {
@@ -20,6 +20,11 @@ const initialState = {
   remarks: ''
 };
 
+const referenceId = reference => {
+  if (!reference || typeof reference !== 'object') return reference || '';
+  return reference._id || reference.id || '';
+};
+
 const normalizeLead = lead => ({
   ...initialState,
   ...(lead || {}),
@@ -27,10 +32,10 @@ const normalizeLead = lead => ({
   mobile: lead?.mobile || lead?.phone || '',
   alternateMobile: lead?.alternateMobile || lead?.alternatePhone || '',
   leadSource: lead?.leadSource || lead?.source || 'Other',
-  interestedProject: lead?.interestedProject?._id || lead?.interestedProject || lead?.project?._id || lead?.project || '',
+  interestedProject: referenceId(lead?.interestedProject) || referenceId(lead?.project),
   interestedPropertyType: lead?.interestedPropertyType || lead?.propertyType || '',
   locationPreference: lead?.locationPreference || lead?.preferredLocation || '',
-  assignedTo: lead?.assignedTo?._id || lead?.assignedTo || '',
+  assignedTo: referenceId(lead?.assignedTo),
   followUpDate: toDateInput(lead?.followUpDate || lead?.nextFollowUp),
   budget: lead?.budget ?? '',
   remarks: lead?.remarks || ''
@@ -61,13 +66,13 @@ export default function LeadForm({ lead, users = [], projects = [], canAssign = 
       alternateMobile: form.alternateMobile.trim() || undefined,
       email: form.email.trim() || undefined,
       leadSource: form.leadSource,
-      interestedProject: form.interestedProject || undefined,
+      interestedProject: referenceId(form.interestedProject) || undefined,
       interestedPropertyType: form.interestedPropertyType || undefined,
       budget: form.budget === '' ? undefined : Number(form.budget),
       locationPreference: form.locationPreference.trim() || undefined,
       status: form.status,
       priority: form.priority,
-      assignedTo: form.assignedTo || undefined,
+      assignedTo: referenceId(form.assignedTo) || undefined,
       followUpDate: form.followUpDate || undefined,
       remarks: form.remarks.trim() || undefined
     };
@@ -100,7 +105,10 @@ export default function LeadForm({ lead, users = [], projects = [], canAssign = 
         </select>
       </FormField>
       <FormField label="Property type">
-        <input className="field" maxLength={100} name="interestedPropertyType" onChange={change} value={form.interestedPropertyType} />
+        <select className="field" name="interestedPropertyType" onChange={change} value={form.interestedPropertyType}>
+          <option value="">Select property type</option>
+          {PROPERTY_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
+        </select>
       </FormField>
       <FormField label="Budget">
         <input className="field" min="0" name="budget" onChange={change} step="1" type="number" value={form.budget} />

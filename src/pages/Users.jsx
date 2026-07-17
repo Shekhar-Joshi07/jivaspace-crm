@@ -1,4 +1,4 @@
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Check, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
@@ -32,6 +32,7 @@ export default function Users() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [users, setUsers] = useState([]);
+  const [reportingManagers, setReportingManagers] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState({ role: '', status: '' });
@@ -65,6 +66,16 @@ export default function Users() {
     return () => window.clearTimeout(timer);
   }, [load]);
 
+  useEffect(() => {
+    let active = true;
+    userService.list({ limit: 500, isActive: true }).then(result => {
+      if (active) setReportingManagers(result.users);
+    }).catch(error => {
+      if (active) toast.error(getErrorMessage(error));
+    });
+    return () => { active = false; };
+  }, []);
+
   const openModal = record => {
     setEditing(record || null);
     setForm(record ? {
@@ -75,7 +86,7 @@ export default function Users() {
       role: record.role || ROLES.SALES_EXECUTIVE,
       isActive: record.isActive ?? true,
       employeeId: record.employeeId || '',
-      reportingManager: record.reportingManager?._id || record.reportingManager || ''
+      reportingManager: record.reportingManager?._id || record.reportingManager?.id || record.reportingManager || ''
     } : initialForm);
   };
 
@@ -105,11 +116,27 @@ export default function Users() {
     }
   };
 
+  const toggleUserStatus = async record => {
+    if (String(record._id || record.id) === String(user?._id || user?.id)) {
+      return toast.error('You cannot deactivate your own account');
+    }
+    setBusy(true);
+    try {
+      await userService.update(record._id || record.id, { isActive: !record.isActive });
+      toast.success(`User ${record.isActive ? 'deactivated' : 'activated'}`);
+      load();
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const remove = async () => {
     setBusy(true);
     try {
-      await userService.remove(deleting._id);
-      toast.success('User deactivated');
+      await userService.remove(deleting._id || deleting.id);
+      toast.success('User deleted');
       setDeleting(null);
       load();
     } catch (error) {
@@ -142,15 +169,26 @@ export default function Users() {
     {
       key: 'actions',
       header: '',
-      cellClassName: 'w-28',
+      cellClassName: 'w-44',
       render: record => (
-        <div className="flex justify-end gap-1">
+        <div className="flex items-center justify-end gap-2">
           {canManage ? <button className="icon-button" onClick={() => openModal(record)} type="button"><Pencil size={17} /></button> : null}
-          {canManage && String(record._id) !== String(user?._id) ? <button className="icon-button text-red-600 hover:bg-red-50" onClick={() => setDeleting(record)} type="button"><Trash2 size={17} /></button> : null}
+          {canManage ? (
+            <StatusToggle
+              checked={record.isActive}
+              disabled={busy || String(record._id || record.id) === String(user?._id || user?.id)}
+              onChange={() => toggleUserStatus(record)}
+            />
+          ) : null}
+          {canManage && String(record._id || record.id) !== String(user?._id || user?.id) ? (
+            <button aria-label={`Delete ${record.name}`} className="icon-button text-red-600 hover:bg-red-50" onClick={() => setDeleting(record)} type="button">
+              <Trash2 size={17} />
+            </button>
+          ) : null}
         </div>
       )
     }
-  ]), [canManage, user?._id]);
+  ]), [busy, canManage, user?._id, user?.id]);
 
   if (loading) return <Loader fullPage label="Loading users…" />;
 
@@ -209,23 +247,54 @@ export default function Users() {
         size="md"
         title={editing ? 'Edit user' : 'Create user'}
       >
-        <UserForm form={form} setForm={setForm} editing={Boolean(editing)} />
+        <UserForm
+          editing={Boolean(editing)}
+          form={form}
+          currentUserId={editing?._id || editing?.id}
+          reportingManagers={reportingManagers}
+          setForm={setForm}
+        />
       </Modal>
 
       <ConfirmDialog
         busy={busy}
-        confirmLabel="Deactivate user"
-        description={deleting ? `Deactivate ${deleting.name}?` : ''}
+        confirmLabel="Delete user"
+        description={deleting ? `Delete ${deleting.name}? This permanently removes the user account.` : ''}
         onClose={() => setDeleting(null)}
         onConfirm={remove}
         open={Boolean(deleting)}
-        title="Deactivate this user?"
+        title="Delete this user?"
       />
+
     </div>
   );
 }
 
-function UserForm({ form, setForm, editing }) {
+function StatusToggle({ checked, disabled, onChange }) {
+  return (
+    <button
+      aria-checked={checked}
+      aria-label={checked ? 'Deactivate user' : 'Activate user'}
+      className={`relative inline-flex h-8 w-[58px] shrink-0 items-center rounded-full border p-1 shadow-sm transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-brand-100 ${checked ? 'border-brand-600 bg-brand-500' : 'border-gray-300 bg-gray-100'} disabled:cursor-not-allowed disabled:opacity-50`}
+      disabled={disabled}
+      onClick={onChange}
+      role="switch"
+      title={checked ? 'Active — click to deactivate' : 'Inactive — click to activate'}
+      type="button"
+    >
+      <span className={`grid h-6 w-6 place-items-center rounded-full bg-white shadow-sm transition-transform duration-200 ${checked ? 'translate-x-6 text-brand-700' : 'translate-x-0 text-ink-400'}`}>
+        {checked ? <Check size={14} strokeWidth={3} /> : <X size={14} strokeWidth={3} />}
+      </span>
+    </button>
+  );
+}
+
+function UserForm({ form, setForm, editing, currentUserId, reportingManagers }) {
+  const managerOptions = reportingManagers.filter(manager => (
+    ['superadmin', 'admin'].includes(manager.role)
+    && String(manager._id || manager.id) !== String(currentUserId || '')
+  ));
+
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <FormField className="sm:col-span-2" label="Full name" required>
@@ -257,7 +326,13 @@ function UserForm({ form, setForm, editing }) {
         </select>
       </FormField>
       <FormField label="Reporting manager">
-        <input className="field" onChange={event => setForm(current => ({ ...current, reportingManager: event.target.value }))} placeholder="Manager user id" value={form.reportingManager} />
+        <select className="field" onChange={event => setForm(current => ({ ...current, reportingManager: event.target.value }))} value={form.reportingManager}>
+          <option value="">No reporting manager</option>
+          {managerOptions.map(manager => {
+            const managerId = manager._id || manager.id;
+            return <option key={managerId} value={managerId}>{manager.name} ({ROLE_LABELS[manager.role] || manager.role})</option>;
+          })}
+        </select>
       </FormField>
     </div>
   );

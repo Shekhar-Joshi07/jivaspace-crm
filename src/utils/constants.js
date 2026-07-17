@@ -41,15 +41,22 @@ export const LEAD_SOURCES = [
   'Facebook',
   'Instagram',
   'Google Ads',
+  '99acres',
+  'MagicBricks',
+  'Housing.com',
   'Referral',
   'Walk-in',
   'Email',
   'Phone',
+  'Outbound Call',
   'Partner',
+  'Channel Partner',
   'Other'
 ];
 
 export const PRIORITIES = ['Low', 'Medium', 'High'];
+export const PROPERTY_TYPES = ['Residential', 'Commercial', 'Plots', 'Villas', 'Apartment', 'Villa', 'Plot', 'Builder Floor', 'Office', 'Shop', 'Warehouse', 'Other'];
+export const PROPERTY_LISTING_TYPES = ['Residential', 'Commercial', 'Plots', 'Villas'];
 export const TASK_STATUSES = ['Pending', 'In Progress', 'Completed', 'Cancelled'];
 export const PROJECT_STATUSES = ['Upcoming', 'Ongoing', 'Ready to Move', 'Sold Out'];
 export const AVAILABILITY_STATUSES = ['Available', 'Hold', 'Booked', 'Sold'];

@@ -1,5 +1,5 @@
 import { ArrowLeft, Save } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { getErrorMessage } from '../api/axios';
@@ -14,24 +14,39 @@ export default function CreateUser() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [busy, setBusy] = useState(false);
+  const [reportingManagers, setReportingManagers] = useState([]);
   const [form, setForm] = useState({
     name: '',
     email: '',
     phone: '',
     password: '',
+    confirmPassword: '',
     role: ROLES.SALES_EXECUTIVE,
     isActive: true,
-    employeeId: '',
     reportingManager: ''
   });
 
+  useEffect(() => {
+    let active = true;
+    userService.list({ limit: 500, isActive: true }).then(result => {
+      if (active) setReportingManagers(result.users);
+    }).catch(error => {
+      if (active) toast.error(getErrorMessage(error));
+    });
+    return () => { active = false; };
+  }, []);
+
   const save = async event => {
     event.preventDefault();
+    if (form.password !== form.confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
     setBusy(true);
     try {
+      const { confirmPassword, ...payload } = form;
       await userService.create({
-        ...form,
-        employeeId: form.employeeId || undefined,
+        ...payload,
         reportingManager: form.reportingManager || undefined
       });
       toast.success('User created');
@@ -73,11 +88,11 @@ export default function CreateUser() {
           <FormField label="Phone">
             <input className="field" onChange={event => setForm(current => ({ ...current, phone: event.target.value }))} value={form.phone} />
           </FormField>
-          <FormField className="sm:col-span-2" label="Temporary password" required>
+          <FormField label="Password" required>
             <input className="field" minLength={8} onChange={event => setForm(current => ({ ...current, password: event.target.value }))} required type="password" value={form.password} />
           </FormField>
-          <FormField label="Employee ID">
-            <input className="field" onChange={event => setForm(current => ({ ...current, employeeId: event.target.value }))} value={form.employeeId} />
+          <FormField label="Confirm password" required>
+            <input className="field" minLength={8} onChange={event => setForm(current => ({ ...current, confirmPassword: event.target.value }))} required type="password" value={form.confirmPassword} />
           </FormField>
           <FormField label="Role">
             <select className="field" onChange={event => setForm(current => ({ ...current, role: event.target.value }))} value={form.role}>
@@ -91,7 +106,15 @@ export default function CreateUser() {
             </select>
           </FormField>
           <FormField label="Reporting manager">
-            <input className="field" onChange={event => setForm(current => ({ ...current, reportingManager: event.target.value }))} placeholder="Manager user id" value={form.reportingManager} />
+            <select className="field" onChange={event => setForm(current => ({ ...current, reportingManager: event.target.value }))} value={form.reportingManager}>
+              <option value="">No reporting manager</option>
+              {reportingManagers
+                .filter(manager => ['superadmin', 'admin'].includes(manager.role))
+                .map(manager => {
+                  const managerId = manager._id || manager.id;
+                  return <option key={managerId} value={managerId}>{manager.name} ({ROLE_LABELS[manager.role] || manager.role})</option>;
+                })}
+            </select>
           </FormField>
           <div className="sm:col-span-2 flex justify-end">
             <button className="btn-primary" disabled={busy} type="submit">

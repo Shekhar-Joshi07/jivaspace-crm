@@ -90,7 +90,7 @@ export default function Dashboard() {
         actions={canManageLeads(user?.role) ? <Link className="btn-primary" to="/leads/create"><ContactRound size={17} /> Create lead</Link> : null}
         description="Track real estate leads, next follow-ups, and today’s activity from one workspace."
         eyebrow="Dashboard"
-        title="Real Estate CRM"
+        title="JivaSpace Reality CRM"
       />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

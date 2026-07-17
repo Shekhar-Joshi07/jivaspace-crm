@@ -1,4 +1,4 @@
-import { Pencil, Plus, Trash2, UsersRound } from 'lucide-react';
+import { Pencil, Trash2, UsersRound } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { getErrorMessage } from '../api/axios';
@@ -6,6 +6,7 @@ import ConfirmDialog from '../components/ConfirmDialog';
 import DataTable from '../components/DataTable';
 import Modal from '../components/Modal';
 import { FormField, PageHeader, StatusBadge } from '../components/UI';
+import { useAuth } from '../context/AuthContext';
 import { teamService } from '../services/teamService';
 import { userService } from '../services/userService';
 import { ADMIN_ROLES, ROLE_LABELS } from '../utils/constants';
@@ -13,6 +14,7 @@ import { ADMIN_ROLES, ROLE_LABELS } from '../utils/constants';
 const emptyTeam = { name: '', manager: '', members: [], description: '', status: 'Active' };
 
 export default function Teams() {
+  const { user: currentUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [teams, setTeams] = useState([]);
@@ -39,6 +41,16 @@ export default function Teams() {
   };
 
   useEffect(() => { load(); }, []);
+
+  const superAdminMembers = useMemo(() => {
+    const currentUserId = String(currentUser?._id || currentUser?.id || '');
+    if (currentUser?.role !== 'superadmin' || !currentUserId) return [];
+    return users.filter(member => {
+      const manager = member.reportingManager;
+      const managerId = manager?._id || manager?.id || manager || '';
+      return String(managerId) === currentUserId;
+    });
+  }, [currentUser?.id, currentUser?._id, currentUser?.role, users]);
 
   const open = team => {
     setEditing(team || null);
@@ -97,13 +109,59 @@ export default function Teams() {
   return (
     <div className="animate-fade-in space-y-6">
       <PageHeader
-        actions={<button className="btn-primary" onClick={() => open(null)} type="button"><Plus size={17} /> Add team</button>}
         description="Manage reporting groups and team members."
         eyebrow="Administration"
         title="Teams"
       />
 
-      <DataTable columns={columns} emptyMessage="No teams found" loading={loading} rows={teams} />
+      {currentUser?.role === 'superadmin' ? (
+        <section className="card p-5 sm:p-6">
+          <div className="flex items-start gap-3">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-brand-50 text-brand-700"><UsersRound size={20} /></span>
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand-700">Reporting structure</p>
+              <h2 className="mt-1 font-display text-xl font-black text-ink-950">My team members</h2>
+              <p className="mt-1 text-sm text-ink-600">Active users who report directly to you.</p>
+            </div>
+          </div>
+
+          {superAdminMembers.length ? (
+            <div className="mt-5 overflow-x-auto rounded-2xl border border-line">
+              <table className="w-full min-w-[720px] border-collapse">
+                <thead>
+                  <tr>
+                    <th className="table-heading w-16">#</th>
+                    <th className="table-heading">Team member</th>
+                    <th className="table-heading">Email</th>
+                    <th className="table-heading">Role</th>
+                    <th className="table-heading">Phone</th>
+                    <th className="table-heading">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {superAdminMembers.map((member, index) => (
+                    <tr className="transition hover:bg-brand-50/50" key={member._id || member.id}>
+                      <td className="table-cell text-ink-400">{index + 1}</td>
+                      <td className="table-cell">
+                        <div className="flex items-center gap-3">
+                          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand-50 text-sm font-black text-brand-700">{member.name?.slice(0, 1)?.toUpperCase() || 'U'}</span>
+                          <strong className="text-ink-950">{member.name}</strong>
+                        </div>
+                      </td>
+                      <td className="table-cell">{member.email || '—'}</td>
+                      <td className="table-cell">{ROLE_LABELS[member.role] || member.role}</td>
+                      <td className="table-cell">{member.phone || '—'}</td>
+                      <td className="table-cell"><StatusBadge value={member.isActive ? 'Active' : 'Inactive'} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : <p className="mt-5 rounded-2xl bg-gray-50 px-4 py-3 text-sm text-ink-600">No active users are assigned to you as reporting manager.</p>}
+        </section>
+      ) : null}
+
+      {teams.length || loading ? <DataTable columns={columns} emptyMessage="No teams found" loading={loading} rows={teams} /> : null}
 
       <Modal
         description="Create or update a reporting team."
