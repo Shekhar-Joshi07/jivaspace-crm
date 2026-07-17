@@ -18,7 +18,7 @@ Responsive React and Vite client for the Complete CRM backend.
 - Password reset and account settings
 - Mobile sidebar, loading, empty, validation, error, modal, and toast states
 
-## Local setup
+## Local setup guide
 
 ```powershell
 cd client
