@@ -2,6 +2,7 @@ import {
   Bookmark,
   Building2,
   CalendarCheck2,
+  ClipboardCheck,
   ChevronRight,
   Download,
   FileClock,
@@ -11,6 +12,7 @@ import {
   LogOut,
   MenuSquare,
   HousePlus,
+  ShieldCheck,
   Users2,
   UserRoundPlus
 } from 'lucide-react';
@@ -26,11 +28,9 @@ const sections = [
   {
     title: 'Lead Management',
     items: [
-      { label: 'Create Lead', to: '/leads/create', icon: UserRoundPlus, roles: ADMIN_ROLES },
       { label: 'Lead', to: '/leads', icon: ListChecks, roles: CRM_ROLES },
       { label: 'Lead Responses', to: '/lead-responses', icon: Bookmark, roles: CRM_ROLES },
       { label: 'Lead Pending', to: '/lead-pending', icon: FileClock, roles: CRM_ROLES },
-      { label: 'Bulk Import', to: '/lead-bulk-import', icon: Download, roles: ADMIN_ROLES },
       { label: 'Lead Transfer', to: '/lead-transfer', icon: ChevronRight, roles: ADMIN_ROLES }
     ]
   },
@@ -60,6 +60,8 @@ const sections = [
     title: 'Operations',
     items: [
       { label: 'Site Visit', to: '/site-visits', icon: CalendarCheck2, roles: CRM_ROLES },
+      { label: 'Attendance', to: '/attendance', icon: ClipboardCheck, roles: CRM_ROLES },
+      { label: 'Attendance Audit', to: '/attendance/audit', icon: ShieldCheck, roles: SUPERADMIN_ROLES },
       { label: 'Booking', to: '/bookings', icon: ListChecks, roles: CRM_ROLES },
       { label: 'Download', to: '/download', icon: Download, roles: ADMIN_ROLES },
       { label: 'Report', to: '/reports', icon: Bookmark, roles: ADMIN_ROLES },

@@ -50,7 +50,7 @@ export default function Users() {
         limit: 10,
         search: search || undefined,
         role: filters.role || undefined,
-        isActive: filters.status === '' ? undefined : filters.status === 'Active'
+        accountStatus: filters.status ? filters.status.toLowerCase() : undefined
       });
       setUsers(result.users);
       setPagination(result.pagination);
@@ -132,6 +132,19 @@ export default function Users() {
     }
   };
 
+  const approveUser = async record => {
+    setBusy(true);
+    try {
+      await userService.approve(record._id || record.id);
+      toast.success('Account approved and email sent');
+      load();
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const remove = async () => {
     setBusy(true);
     try {
@@ -164,7 +177,11 @@ export default function Users() {
     },
     { key: 'role', header: 'Role', render: record => ROLE_LABELS[record.role] || record.role },
     { key: 'phone', header: 'Phone', render: record => record.phone || '—' },
-    { key: 'status', header: 'Status', render: record => <StatusBadge value={record.isActive ? 'Active' : 'Inactive'} /> },
+    {
+      key: 'status',
+      header: 'Status',
+      render: record => <StatusBadge value={record.approvalStatus === 'pending' ? 'Pending approval' : record.isActive ? 'Active' : 'Inactive'} />
+    },
     { key: 'lastLoginAt', header: 'Last login', render: record => formatDate(record.lastLoginAt) },
     {
       key: 'actions',
@@ -173,7 +190,11 @@ export default function Users() {
       render: record => (
         <div className="flex items-center justify-end gap-2">
           {canManage ? <button className="icon-button" onClick={() => openModal(record)} type="button"><Pencil size={17} /></button> : null}
-          {canManage ? (
+          {canManage && record.approvalStatus === 'pending' ? (
+            <button className="btn-secondary min-h-9 px-3 text-xs" disabled={busy} onClick={() => approveUser(record)} type="button">
+              <Check size={15} /> Approve
+            </button>
+          ) : canManage ? (
             <StatusToggle
               checked={record.isActive}
               disabled={busy || String(record._id || record.id) === String(user?._id || user?.id)}
@@ -213,7 +234,11 @@ export default function Users() {
           {
             key: 'status',
             label: 'Status',
-            options: [{ value: 'Active', label: 'Active' }, { value: 'Inactive', label: 'Inactive' }],
+            options: [
+              { value: 'Pending', label: 'Pending approval' },
+              { value: 'Active', label: 'Active' },
+              { value: 'Inactive', label: 'Inactive' }
+            ],
             value: filters.status,
             allLabel: 'All statuses'
           }

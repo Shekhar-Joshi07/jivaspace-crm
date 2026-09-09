@@ -95,6 +95,7 @@ export const STATUS_STYLES = {
   Medium: 'bg-amber-50 text-amber-800 ring-amber-200',
   Low: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
   Active: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+  Present: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
   Inactive: 'bg-gray-100 text-gray-600 ring-gray-200'
 };
 

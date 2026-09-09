@@ -79,8 +79,11 @@ export const AuthProvider = ({ children }) => {
 
   const register = async payload => {
     const result = await authService.register(payload);
-    saveSession(result);
-    return result.user;
+    if (result.token && result.user) {
+      saveSession(result);
+      return { user: result.user, pendingApproval: false, message: result.message };
+    }
+    return { user: null, pendingApproval: true, message: result.message };
   };
 
   const logout = async () => {

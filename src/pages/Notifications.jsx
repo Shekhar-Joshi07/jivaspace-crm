@@ -56,6 +56,7 @@ export default function Notifications() {
     }
     if (notification.relatedLead?._id) navigate(`/leads/${notification.relatedLead._id}`);
     else if (notification.relatedTask?._id) navigate('/tasks');
+    else if (notification.actionUrl) navigate(notification.actionUrl);
     else load();
   };
 

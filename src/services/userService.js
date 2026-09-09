@@ -14,6 +14,9 @@ export const userService = {
   async update(id, payload) {
     return unwrap(await api.put(`/users/${id}`, payload));
   },
+  async approve(id) {
+    return unwrap(await api.patch(`/users/${id}/approve`));
+  },
   async remove(id) {
     return (await api.delete(`/users/${id}`)).data;
   }

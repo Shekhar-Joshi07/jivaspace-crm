@@ -68,6 +68,9 @@ export const leadService = {
     form.append('file', file);
     return unwrap(await api.post('/leads/import', form));
   },
+  async downloadImportTemplate() {
+    return blobRequest('/leads/import-template');
+  },
   async exportSpreadsheet(params = {}) {
     return blobRequest('/leads/export', { params });
   },

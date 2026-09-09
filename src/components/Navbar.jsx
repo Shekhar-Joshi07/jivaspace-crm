@@ -19,6 +19,8 @@ const titleMap = {
   '/property-inventory': 'Property Inventory',
   '/property-listings': 'Property Listings',
   '/site-visits': 'Site Visits',
+  '/attendance': 'Attendance',
+  '/attendance/audit': 'Attendance Audit',
   '/bookings': 'Bookings',
   '/download': 'Downloads',
   '/reports': 'Reports',

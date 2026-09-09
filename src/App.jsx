@@ -7,6 +7,8 @@ import RoleRoute from './components/RoleRoute';
 import { ADMIN_ROLES, CRM_ROLES, SUPERADMIN_ROLES } from './utils/constants';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Attendance = lazy(() => import('./pages/Attendance'));
+const AttendanceAudit = lazy(() => import('./pages/AttendanceAudit'));
 const BulkImport = lazy(() => import('./pages/BulkImport'));
 const Bookings = lazy(() => import('./pages/Bookings'));
 const CreateLead = lazy(() => import('./pages/CreateLead'));
@@ -98,6 +100,15 @@ export default function App() {
         >
           <Route index element={<Navigate replace to="dashboard" />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="attendance" element={<Attendance />} />
+          <Route
+            element={(
+              <RoleRoute roles={SUPERADMIN_ROLES}>
+                <AttendanceAudit />
+              </RoleRoute>
+            )}
+            path="attendance/audit"
+          />
           <Route path="leads" element={<Leads />} />
           <Route
             element={(

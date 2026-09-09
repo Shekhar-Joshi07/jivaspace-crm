@@ -1,4 +1,4 @@
-import { FileSpreadsheet, Upload } from 'lucide-react';
+import { Download, FileSpreadsheet, Upload } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { getErrorMessage } from '../api/axios';
@@ -25,6 +25,20 @@ export default function BulkImport() {
     }
   };
 
+  const downloadTemplate = async () => {
+    try {
+      const fileData = await leadService.downloadImportTemplate();
+      const url = URL.createObjectURL(fileData);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'lead-import-template.xlsx';
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
+  };
+
   return (
     <div className="animate-fade-in space-y-6">
       <PageHeader
@@ -39,10 +53,14 @@ export default function BulkImport() {
             <div className="rounded-2xl border border-line bg-gray-50/70 p-4">
               <p className="text-sm font-semibold text-ink-800">Expected columns</p>
               <p className="mt-2 text-sm leading-6 text-ink-600">
-                customerName, mobile, alternateMobile, email, leadSource, interestedProject,
-                interestedPropertyType, budget, locationPreference, status, priority,
-                assignedTo, followUpDate, remarks
+                <span className="font-semibold text-ink-800">Required:</span> name, phone.{' '}
+                <span className="font-semibold text-ink-800">Optional:</span> email, source, status, priority,
+                purpose, propertyType, configuration, preferredLocation, followUpDate, budget,
+                budgetMax, estimatedValue, revenue, requirement.
               </p>
+              <button className="btn-secondary mt-4" onClick={downloadTemplate} type="button">
+                <Download size={17} /> Download Excel template
+              </button>
             </div>
             <label className="grid min-h-60 cursor-pointer place-items-center rounded-3xl border-2 border-dashed border-line bg-white p-6 text-center transition hover:border-brand-500 hover:bg-brand-50">
               <span>

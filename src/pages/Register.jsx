@@ -22,9 +22,9 @@ export default function Register() {
     setBusy(true);
     try {
       const { confirmPassword: _confirmPassword, ...payload } = form;
-      await register(payload);
-      toast.success('Workspace account created');
-      navigate('/', { replace: true });
+      const result = await register(payload);
+      toast.success(result.message || (result.pendingApproval ? 'Account request submitted' : 'Workspace account created'));
+      navigate(result.pendingApproval ? '/login' : '/', { replace: true });
     } catch (error) {
       toast.error(getErrorMessage(error));
     } finally {
@@ -33,7 +33,7 @@ export default function Register() {
   };
 
   return (
-    <AuthLayout title="Create your CRM account" subtitle="The first account becomes the workspace superadmin. Later users can be invited from User Management.">
+    <AuthLayout title="Create your CRM account" subtitle="Your account request will be sent to the Super Admin for approval. The first account becomes the workspace superadmin.">
       <form className="grid gap-4" onSubmit={submit}>
         <FormField label="Full name" required>
           <input autoFocus className="field" maxLength={100} onChange={event => setForm({ ...form, name: event.target.value })} required value={form.name} />

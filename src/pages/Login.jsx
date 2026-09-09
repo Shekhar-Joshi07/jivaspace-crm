@@ -1,7 +1,7 @@
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
 import { FormField } from '../components/UI';
 import { getErrorMessage } from '../api/axios';
@@ -43,10 +43,14 @@ export default function Login() {
             </button>
           </span>
         </FormField>
+        <div className="flex justify-end">
+          <Link className="text-sm font-bold text-brand-700 hover:text-brand-800" to="/forgot-password">Forgot password?</Link>
+        </div>
         <button className="btn-primary w-full" disabled={busy} type="submit">
           <LogIn size={18} /> {busy ? 'Signing in...' : 'Sign in'}
         </button>
       </form>
+      <p className="mt-6 text-center text-sm text-ink-600">New to the CRM? <Link className="font-bold text-brand-700" to="/register">Create an account</Link></p>
     </AuthLayout>
   );
 }
