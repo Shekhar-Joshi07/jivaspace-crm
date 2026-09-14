@@ -5,12 +5,13 @@ export const USER_KEY = 'crm_user';
 
 const getApiBaseUrl = () => {
   const configuredUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-  const normalizedUrl = configuredUrl.trim().replace(/\/+$/, '');
-  const apiIndex = normalizedUrl.indexOf('/api');
+  const apiUrl = new URL(configuredUrl.trim());
 
-  return apiIndex === -1
-    ? `${normalizedUrl}/api`
-    : `${normalizedUrl.slice(0, apiIndex)}/api`;
+  apiUrl.pathname = '/api';
+  apiUrl.search = '';
+  apiUrl.hash = '';
+
+  return apiUrl.toString().replace(/\/$/, '');
 };
 
 const api = axios.create({
