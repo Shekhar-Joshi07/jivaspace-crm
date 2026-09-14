@@ -25,6 +25,19 @@ const getCurrentLocation = () => new Promise((resolve, reject) => {
   );
 });
 
+const getAddressForLocation = async ({ latitude, longitude }) => {
+  try {
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}`, {
+      headers: { Accept: 'application/json' }
+    });
+    if (!response.ok) throw new Error('Address lookup failed');
+    const result = await response.json();
+    return result.display_name || 'Address unavailable';
+  } catch {
+    return 'Address unavailable — location coordinates captured successfully';
+  }
+};
+
 export default function Attendance() {
   const { user } = useAuth();
   const [data, setData] = useState(null);
@@ -54,7 +67,8 @@ export default function Attendance() {
     setBusy(true);
     try {
       const currentLocation = await getCurrentLocation();
-      setLocation(currentLocation);
+      const address = await getAddressForLocation(currentLocation);
+      setLocation({ ...currentLocation, address });
       toast.success('Latitude and longitude captured');
     } catch (error) {
       toast.error(getErrorMessage(error));
@@ -84,9 +98,7 @@ export default function Attendance() {
 
   if (loading) return <Loader fullPage label="Loading attendance…" />;
 
-  const configuration = data?.configuration;
   const attendance = data?.attendance;
-  const isConfigured = configuration?.configured && configuration?.isEnabled;
   const attendanceStatus = attendance?.checkOut ? 'Present' : attendance?.checkIn ? 'In progress' : 'Pending';
   const hasLocation = Boolean(location);
 
@@ -103,7 +115,7 @@ export default function Attendance() {
         <div className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr_auto] lg:items-end">
           <label className="block"><span className="field-label">Latitude</span><input className="field bg-gray-50" placeholder="Get location to fill" readOnly value={location?.latitude?.toFixed(6) || ''} /></label>
           <label className="block"><span className="field-label">Longitude</span><input className="field bg-gray-50" placeholder="Get location to fill" readOnly value={location?.longitude?.toFixed(6) || ''} /></label>
-          <label className="block"><span className="field-label">GPS accuracy</span><input className="field bg-gray-50" placeholder="—" readOnly value={location?.accuracyMeters ? `±${Math.round(location.accuracyMeters)} metres` : ''} /></label>
+          <label className="block"><span className="field-label">Current address</span><input className="field bg-gray-50" placeholder="Get location to fill" readOnly title={location?.address || ''} value={location?.address || ''} /></label>
           <button className="btn-secondary min-h-11" disabled={busy} onClick={captureLocation} type="button"><LocateFixed size={17} /> {busy ? 'Getting location…' : hasLocation ? 'Update location' : 'Get current location'}</button>
         </div>
       </section>
@@ -123,8 +135,8 @@ export default function Attendance() {
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
             <StatusBadge value={attendanceStatus} />
-            <button className="btn-primary min-h-10 px-4" disabled={!isConfigured || !hasLocation || busy || Boolean(attendance?.checkIn)} onClick={() => markAttendance('check-in')} type="button"><LogIn size={17} /> {attendance?.checkIn ? 'Checked in' : 'Check in'}</button>
-            <button className="btn-secondary min-h-10 px-4" disabled={!isConfigured || !hasLocation || busy || !attendance?.checkIn || Boolean(attendance?.checkOut)} onClick={() => markAttendance('check-out')} type="button"><LogOut size={17} /> {attendance?.checkOut ? 'Checked out' : 'Check out'}</button>
+            <button className="btn-primary min-h-10 px-4" disabled={!hasLocation || busy || Boolean(attendance?.checkIn)} onClick={() => markAttendance('check-in')} type="button"><LogIn size={17} /> {attendance?.checkIn ? 'Checked in' : 'Check in'}</button>
+            <button className="btn-secondary min-h-10 px-4" disabled={!hasLocation || busy || !attendance?.checkIn || Boolean(attendance?.checkOut)} onClick={() => markAttendance('check-out')} type="button"><LogOut size={17} /> {attendance?.checkOut ? 'Checked out' : 'Check out'}</button>
           </div>
         </div>
       </section>
@@ -144,19 +156,12 @@ export default function Attendance() {
         </div>
       </section>
 
-      {!isConfigured ? (
-        <section className="card border-amber-200 bg-amber-50 p-5 text-amber-900">
-          <strong>Attendance location is not available yet.</strong>
-          <p className="mt-1 text-sm">Ask a Super Admin to configure the office latitude, longitude, and permitted radius.</p>
-        </section>
-      ) : null}
-
       <section className="card overflow-hidden">
         <div className="border-b border-line bg-gray-50/70 px-5 py-4 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="font-display text-lg font-extrabold text-ink-950">Today’s attendance</p>
-              <p className="mt-1 text-sm text-ink-600">Location permission is required. Allowed radius: {configuration?.radiusMeters || '—'} metres.</p>
+              <p className="mt-1 text-sm text-ink-600">Capture your current latitude and longitude to mark today’s attendance.</p>
             </div>
             <button aria-label="Refresh attendance" className="icon-button" disabled={loading || busy} onClick={load} type="button"><RefreshCw size={17} /></button>
           </div>
@@ -168,10 +173,10 @@ export default function Attendance() {
         </div>
 
         <div className="hidden flex-col gap-3 border-t border-line p-5 sm:flex-row sm:p-6">
-          <button className="btn-primary flex-1" disabled={!isConfigured || !hasLocation || busy || Boolean(attendance?.checkIn)} onClick={() => markAttendance('check-in')} type="button">
+          <button className="btn-primary flex-1" disabled={!hasLocation || busy || Boolean(attendance?.checkIn)} onClick={() => markAttendance('check-in')} type="button">
             <LogIn size={18} /> {busy ? 'Getting location…' : attendance?.checkIn ? 'Checked in' : 'Check in'}
           </button>
-          <button className="btn-secondary flex-1" disabled={!isConfigured || !hasLocation || busy || !attendance?.checkIn || Boolean(attendance?.checkOut)} onClick={() => markAttendance('check-out')} type="button">
+          <button className="btn-secondary flex-1" disabled={!hasLocation || busy || !attendance?.checkIn || Boolean(attendance?.checkOut)} onClick={() => markAttendance('check-out')} type="button">
             <LogOut size={18} /> {busy ? 'Getting location…' : attendance?.checkOut ? 'Checked out' : 'Check out'}
           </button>
         </div>
@@ -191,7 +196,7 @@ function AttendanceEvent({ label, location }) {
       {complete ? (
         <div className="mt-4 space-y-2 text-sm text-ink-600">
           <p className="flex items-center gap-2"><Clock3 size={16} /> {formatDateTime(location.at)}</p>
-          <p className="flex items-center gap-2"><MapPin size={16} /> Verified within {location.distanceMeters} m of the office</p>
+          <p className="flex items-center gap-2"><MapPin size={16} /> Location captured successfully</p>
           {location.accuracyMeters ? <p className="text-xs text-ink-400">GPS accuracy: ±{Math.round(location.accuracyMeters)} m</p> : null}
         </div>
       ) : <p className="mt-4 text-sm text-ink-500">Not recorded yet.</p>}

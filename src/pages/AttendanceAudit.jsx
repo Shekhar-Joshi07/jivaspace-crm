@@ -75,7 +75,7 @@ export default function AttendanceAudit() {
     {
       key: 'location',
       header: 'Verification',
-      render: record => <span className="text-sm text-ink-600">In {record.checkIn?.distanceMeters} m · Out {record.checkOut?.distanceMeters ?? '—'} m</span>
+      render: record => <span className="text-sm text-ink-600">In: {record.checkIn?.latitude?.toFixed(5)}, {record.checkIn?.longitude?.toFixed(5)}<br />Out: {record.checkOut ? `${record.checkOut.latitude.toFixed(5)}, ${record.checkOut.longitude.toFixed(5)}` : '—'}</span>
     }
   ];
 
@@ -88,7 +88,7 @@ export default function AttendanceAudit() {
         title="Attendance Audit"
       />
 
-      <section className="card p-5 sm:p-6">
+      <section className="hidden card p-5 sm:p-6">
         <div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-brand-50 text-brand-700"><MapPinned size={20} /></span><div><h2 className="font-display text-lg font-extrabold">Office attendance location</h2><p className="text-sm text-ink-600">Only users inside this radius can check in or check out.</p></div></div>
         <form className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5" onSubmit={saveConfiguration}>
           <FormField className="xl:col-span-1" label="Location name" required><input className="field" onChange={event => setConfiguration(current => ({ ...current, name: event.target.value }))} required value={configuration.name || ''} /></FormField>
