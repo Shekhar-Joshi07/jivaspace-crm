@@ -1,0 +1,1 @@
+var e=e=>e?.customerName||e?.name||`Untitled lead`,t=e=>e?.mobile||e?.phone||``,n=e=>e?.email||``,r=e=>e?.interestedProject?.projectName||e?.interestedProject?.name||e?.project?.projectName||e?.project?.name||e?.project||`—`,i=e=>e?.assignedTo?.name||e?.assignedTo||`Unassigned`;export{r as a,i,t as n,e as r,n as t};

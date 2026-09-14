@@ -1,0 +1,1 @@
+import{S as e,w as t}from"./index-B6c4YKiW.js";var n={async list(){return t(await e.get(`/teams`))},async get(n){return t(await e.get(`/teams/${n}`))},async create(n){return t(await e.post(`/teams`,n))},async update(n,r){return t(await e.put(`/teams/${n}`,r))},async remove(t){return(await e.delete(`/teams/${t}`)).data}};export{n as t};
