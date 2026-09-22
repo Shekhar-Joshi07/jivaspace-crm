@@ -13,8 +13,7 @@ import {
   MenuSquare,
   HousePlus,
   ShieldCheck,
-  Users2,
-  UserRoundPlus
+  Users2
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -36,10 +35,7 @@ const sections = [
   },
   {
     title: 'User Management',
-    items: [
-      { label: 'Create User', to: '/users/create', icon: UserRoundPlus, roles: SUPERADMIN_ROLES },
-      { label: 'User', to: '/users', icon: Users2, roles: SUPERADMIN_ROLES }
-    ]
+    items: [{ label: 'User', to: '/users', icon: Users2, roles: SUPERADMIN_ROLES }]
   },
   {
     title: 'Teams',
@@ -60,7 +56,7 @@ const sections = [
     title: 'Operations',
     items: [
       { label: 'Site Visit', to: '/site-visits', icon: CalendarCheck2, roles: CRM_ROLES },
-      { label: 'Attendance', to: '/attendance', icon: ClipboardCheck, roles: CRM_ROLES },
+      { label: 'Attendance', to: '/attendance', icon: ClipboardCheck, end: true, roles: CRM_ROLES },
       { label: 'Attendance Audit', to: '/attendance/audit', icon: ShieldCheck, roles: SUPERADMIN_ROLES },
       { label: 'Booking', to: '/bookings', icon: ListChecks, roles: CRM_ROLES },
       { label: 'Download', to: '/download', icon: Download, roles: ADMIN_ROLES },

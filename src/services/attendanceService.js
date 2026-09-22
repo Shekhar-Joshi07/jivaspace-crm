@@ -17,7 +17,10 @@ export const attendanceService = {
     return unwrap(await api.put('/attendance/config', payload));
   },
   async audit(params = {}) {
-    const response = await api.get('/attendance/audit', { params });
+    const query = Object.fromEntries(
+      Object.entries(params).filter(([, value]) => value !== '' && value !== undefined && value !== null)
+    );
+    const response = await api.get('/attendance/audit', { params: query });
     return { records: unwrap(response), pagination: response.data.pagination };
   }
 };
