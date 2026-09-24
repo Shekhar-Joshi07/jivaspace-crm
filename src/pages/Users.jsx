@@ -1,5 +1,5 @@
 import { Check, Pencil, Plus, Trash2, X } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { getErrorMessage } from '../api/axios';
@@ -40,6 +40,7 @@ export default function Users() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(initialForm);
   const [deleting, setDeleting] = useState(null);
+  const approvingUserId = useRef(null);
   const canManage = canManageUsers(user?.role);
 
   const load = useCallback(async () => {
@@ -133,14 +134,19 @@ export default function Users() {
   };
 
   const approveUser = async record => {
+    const userId = record._id || record.id;
+    if (approvingUserId.current === userId) return;
+
+    approvingUserId.current = userId;
     setBusy(true);
     try {
-      await userService.approve(record._id || record.id);
-      toast.success('Account approved and email sent');
+      const result = await userService.approve(userId);
+      toast.success(result?.alreadyApproved ? 'Account was already approved' : result?.emailSent === false ? 'Account approved; email could not be sent' : 'Account approved and email sent');
       load();
     } catch (error) {
       toast.error(getErrorMessage(error));
     } finally {
+      approvingUserId.current = null;
       setBusy(false);
     }
   };

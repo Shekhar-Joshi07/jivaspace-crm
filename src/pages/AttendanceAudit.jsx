@@ -76,6 +76,16 @@ export default function AttendanceAudit() {
       key: 'location',
       header: 'Verification',
       render: record => <span className="text-sm text-ink-600">In: {record.checkIn?.latitude?.toFixed(5)}, {record.checkIn?.longitude?.toFixed(5)}<br />Out: {record.checkOut ? `${record.checkOut.latitude.toFixed(5)}, ${record.checkOut.longitude.toFixed(5)}` : '—'}</span>
+    },
+    {
+      key: 'address',
+      header: 'Location address',
+      render: record => (
+        <div className="min-w-60 text-sm text-ink-600">
+          <p><span className="font-semibold text-ink-700">In:</span> {record.checkIn?.address || 'Address unavailable for this record'}</p>
+          <p className="mt-1"><span className="font-semibold text-ink-700">Out:</span> {record.checkOut?.address || (record.checkOut ? 'Address unavailable for this record' : '—')}</p>
+        </div>
+      )
     }
   ];
 
