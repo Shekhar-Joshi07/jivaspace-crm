@@ -30,9 +30,12 @@ export default function LeadTransfer() {
   const [reason, setReason] = useState('');
 
   useEffect(() => {
-    userService.list({ limit: 200, isActive: true })
+    userService.list({ limit: 200, isActive: true, role: 'sales_executive' })
       .then(result => setUsers(result.users))
-      .catch(() => setUsers([]));
+      .catch(error => {
+        setUsers([]);
+        toast.error(getErrorMessage(error));
+      });
   }, []);
 
   const load = useCallback(async () => {
