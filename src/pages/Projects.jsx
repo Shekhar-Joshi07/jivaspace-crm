@@ -25,7 +25,7 @@ const emptyForm = {
   description: '',
   brochure: '',
   images: '',
-  publishOnWebsite: false,
+  publishOnWebsite: true,
   websiteSlug: ''
 };
 
