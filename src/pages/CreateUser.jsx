@@ -1,5 +1,5 @@
 import { ArrowLeft, Save } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { getErrorMessage } from '../api/axios';
@@ -14,7 +14,6 @@ export default function CreateUser() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [busy, setBusy] = useState(false);
-  const [reportingManagers, setReportingManagers] = useState([]);
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -22,19 +21,8 @@ export default function CreateUser() {
     password: '',
     confirmPassword: '',
     role: ROLES.SALES_EXECUTIVE,
-    isActive: true,
-    reportingManager: ''
+    isActive: true
   });
-
-  useEffect(() => {
-    let active = true;
-    userService.list({ limit: 500, isActive: true }).then(result => {
-      if (active) setReportingManagers(result.users);
-    }).catch(error => {
-      if (active) toast.error(getErrorMessage(error));
-    });
-    return () => { active = false; };
-  }, []);
 
   const save = async event => {
     event.preventDefault();
@@ -45,10 +33,7 @@ export default function CreateUser() {
     setBusy(true);
     try {
       const { confirmPassword, ...payload } = form;
-      await userService.create({
-        ...payload,
-        reportingManager: form.reportingManager || undefined
-      });
+      await userService.create(payload);
       toast.success('User created');
       navigate('/users');
     } catch (error) {
@@ -103,17 +88,6 @@ export default function CreateUser() {
             <select className="field" onChange={event => setForm(current => ({ ...current, isActive: event.target.value === 'true' }))} value={String(form.isActive)}>
               <option value="true">Active</option>
               <option value="false">Inactive</option>
-            </select>
-          </FormField>
-          <FormField label="Reporting manager">
-            <select className="field" onChange={event => setForm(current => ({ ...current, reportingManager: event.target.value }))} value={form.reportingManager}>
-              <option value="">No reporting manager</option>
-              {reportingManagers
-                .filter(manager => ['superadmin', 'admin'].includes(manager.role))
-                .map(manager => {
-                  const managerId = manager._id || manager.id;
-                  return <option key={managerId} value={managerId}>{manager.name} ({ROLE_LABELS[manager.role] || manager.role})</option>;
-                })}
             </select>
           </FormField>
           <div className="sm:col-span-2 flex justify-end">

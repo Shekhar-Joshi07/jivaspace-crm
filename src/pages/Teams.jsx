@@ -29,7 +29,7 @@ export default function Teams() {
     try {
       const [teamResult, userResult] = await Promise.all([
         teamService.list(),
-        userService.list({ limit: 500, isActive: true })
+        userService.list({ limit: 500 })
       ]);
       setTeams(teamResult);
       setUsers(userResult.users);
@@ -42,15 +42,15 @@ export default function Teams() {
 
   useEffect(() => { load(); }, []);
 
-  const superAdminMembers = useMemo(() => {
-    const currentUserId = String(currentUser?._id || currentUser?.id || '');
-    if (currentUser?.role !== 'superadmin' || !currentUserId) return [];
-    return users.filter(member => {
-      const manager = member.reportingManager;
-      const managerId = manager?._id || manager?.id || manager || '';
-      return String(managerId) === currentUserId;
-    });
-  }, [currentUser?.id, currentUser?._id, currentUser?.role, users]);
+  const visibleUsers = useMemo(() => {
+    if (currentUser?.role === 'superadmin') return users;
+    if (currentUser?.role === 'admin') return users.filter(user => user.role === 'sales_executive');
+    return [];
+  }, [currentUser?.role, users]);
+
+  const teamDescription = currentUser?.role === 'superadmin'
+    ? 'All users in the CRM.'
+    : 'All sales executives in the CRM.';
 
   const open = team => {
     setEditing(team || null);
@@ -114,18 +114,18 @@ export default function Teams() {
         title="Teams"
       />
 
-      {currentUser?.role === 'superadmin' ? (
+      {ADMIN_ROLES.includes(currentUser?.role) ? (
         <section className="card p-5 sm:p-6">
           <div className="flex items-start gap-3">
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-brand-50 text-brand-700"><UsersRound size={20} /></span>
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand-700">Reporting structure</p>
-              <h2 className="mt-1 font-display text-xl font-black text-ink-950">My team members</h2>
-              <p className="mt-1 text-sm text-ink-600">Active users who report directly to you.</p>
+              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand-700">User directory</p>
+              <h2 className="mt-1 font-display text-xl font-black text-ink-950">Team members</h2>
+              <p className="mt-1 text-sm text-ink-600">{teamDescription}</p>
             </div>
           </div>
 
-          {superAdminMembers.length ? (
+          {visibleUsers.length ? (
             <div className="mt-5 overflow-x-auto rounded-2xl border border-line">
               <table className="w-full min-w-[720px] border-collapse">
                 <thead>
@@ -139,7 +139,7 @@ export default function Teams() {
                   </tr>
                 </thead>
                 <tbody>
-                  {superAdminMembers.map((member, index) => (
+                  {visibleUsers.map((member, index) => (
                     <tr className="transition hover:bg-brand-50/50" key={member._id || member.id}>
                       <td className="table-cell text-ink-400">{index + 1}</td>
                       <td className="table-cell">
@@ -157,7 +157,7 @@ export default function Teams() {
                 </tbody>
               </table>
             </div>
-          ) : <p className="mt-5 rounded-2xl bg-gray-50 px-4 py-3 text-sm text-ink-600">No active users are assigned to you as reporting manager.</p>}
+          ) : <p className="mt-5 rounded-2xl bg-gray-50 px-4 py-3 text-sm text-ink-600">No users found.</p>}
         </section>
       ) : null}
 

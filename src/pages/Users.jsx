@@ -21,8 +21,7 @@ const initialForm = {
   password: '',
   role: ROLES.SALES_EXECUTIVE,
   isActive: true,
-  employeeId: '',
-  reportingManager: ''
+  employeeId: ''
 };
 
 const roleOptions = Object.entries(ROLE_LABELS).map(([value, label]) => ({ value, label }));
@@ -32,7 +31,6 @@ export default function Users() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [users, setUsers] = useState([]);
-  const [reportingManagers, setReportingManagers] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState({ role: '', status: '' });
@@ -67,16 +65,6 @@ export default function Users() {
     return () => window.clearTimeout(timer);
   }, [load]);
 
-  useEffect(() => {
-    let active = true;
-    userService.list({ limit: 500, isActive: true }).then(result => {
-      if (active) setReportingManagers(result.users);
-    }).catch(error => {
-      if (active) toast.error(getErrorMessage(error));
-    });
-    return () => { active = false; };
-  }, []);
-
   const openModal = record => {
     setEditing(record || null);
     setForm(record ? {
@@ -86,8 +74,7 @@ export default function Users() {
       password: '',
       role: record.role || ROLES.SALES_EXECUTIVE,
       isActive: record.isActive ?? true,
-      employeeId: record.employeeId || '',
-      reportingManager: record.reportingManager?._id || record.reportingManager?.id || record.reportingManager || ''
+      employeeId: record.employeeId || ''
     } : initialForm);
   };
 
@@ -96,8 +83,7 @@ export default function Users() {
     try {
       const payload = {
         ...form,
-        employeeId: form.employeeId || undefined,
-        reportingManager: form.reportingManager || undefined
+        employeeId: form.employeeId || undefined
       };
       if (editing) {
         const updatePayload = { ...payload };
@@ -281,8 +267,6 @@ export default function Users() {
         <UserForm
           editing={Boolean(editing)}
           form={form}
-          currentUserId={editing?._id || editing?.id}
-          reportingManagers={reportingManagers}
           setForm={setForm}
         />
       </Modal>
@@ -320,12 +304,7 @@ function StatusToggle({ checked, disabled, onChange }) {
   );
 }
 
-function UserForm({ form, setForm, editing, currentUserId, reportingManagers }) {
-  const managerOptions = reportingManagers.filter(manager => (
-    ['superadmin', 'admin'].includes(manager.role)
-    && String(manager._id || manager.id) !== String(currentUserId || '')
-  ));
-
+function UserForm({ form, setForm, editing }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <FormField className="sm:col-span-2" label="Full name" required>
@@ -354,15 +333,6 @@ function UserForm({ form, setForm, editing, currentUserId, reportingManagers }) 
         <select className="field" onChange={event => setForm(current => ({ ...current, isActive: event.target.value === 'true' }))} value={String(form.isActive)}>
           <option value="true">Active</option>
           <option value="false">Inactive</option>
-        </select>
-      </FormField>
-      <FormField label="Reporting manager">
-        <select className="field" onChange={event => setForm(current => ({ ...current, reportingManager: event.target.value }))} value={form.reportingManager}>
-          <option value="">No reporting manager</option>
-          {managerOptions.map(manager => {
-            const managerId = manager._id || manager.id;
-            return <option key={managerId} value={managerId}>{manager.name} ({ROLE_LABELS[manager.role] || manager.role})</option>;
-          })}
         </select>
       </FormField>
     </div>

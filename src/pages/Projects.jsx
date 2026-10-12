@@ -24,8 +24,16 @@ const emptyForm = {
   amenities: '',
   description: '',
   brochure: '',
-  images: ''
+  images: '',
+  publishOnWebsite: false,
+  websiteSlug: ''
 };
+
+const toWebsiteSlug = value => value
+  .toLowerCase()
+  .trim()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-+|-+$/g, '');
 
 export default function Projects() {
   const [loading, setLoading] = useState(true);
@@ -78,7 +86,9 @@ export default function Projects() {
       amenities: (project.amenities || []).join(', '),
       description: project.description || '',
       brochure: project.brochure || '',
-      images: (project.images || []).join(', ')
+      images: (project.images || []).join(', '),
+      publishOnWebsite: Boolean(project.publishOnWebsite),
+      websiteSlug: project.websiteSlug || ''
     } : emptyForm);
   };
 
@@ -97,7 +107,11 @@ export default function Projects() {
         amenities: form.amenities.split(',').map(item => item.trim()).filter(Boolean),
         description: form.description || undefined,
         brochure: form.brochure || undefined,
-        images: form.images.split(',').map(item => item.trim()).filter(Boolean)
+        images: form.images.split(',').map(item => item.trim()).filter(Boolean),
+        publishOnWebsite: form.publishOnWebsite,
+        websiteSlug: form.publishOnWebsite
+          ? (form.websiteSlug || toWebsiteSlug(form.projectName))
+          : undefined
       };
       if (editing) {
         await projectService.update(editing._id, payload);
@@ -135,7 +149,7 @@ export default function Projects() {
     { key: 'location', header: 'Location', render: row => row.location || '—' },
     { key: 'propertyType', header: 'Type', render: row => row.propertyType || '—' },
     { key: 'units', header: 'Units', render: row => `${row.availableUnits ?? 0}/${row.totalUnits ?? 0}` },
-    { key: 'status', header: 'Status', render: row => <StatusBadge value={row.status} /> },
+    { key: 'status', header: 'Status', render: row => <div className="flex flex-wrap gap-1"><StatusBadge value={row.status} />{row.publishOnWebsite ? <span className="rounded-full bg-blue-50 px-2 py-1 text-xs font-bold text-blue-700">Website</span> : null}</div> },
     { key: 'createdAt', header: 'Created', render: row => formatDate(row.createdAt) },
     { key: 'actions', header: '', cellClassName: 'w-28', render: row => <div className="flex justify-end gap-1"><button className="icon-button" onClick={() => open(row)} type="button"><Pencil size={17} /></button><button className="icon-button text-red-600 hover:bg-red-50" onClick={() => setDeleting(row)} type="button"><Trash2 size={17} /></button></div> }
   ]), []);
@@ -211,6 +225,18 @@ export default function Projects() {
               {PROJECT_STATUSES.map(item => <option key={item}>{item}</option>)}
             </select>
           </FormField>
+          <FormField label="Website visibility">
+            <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-line px-3 text-sm font-semibold text-ink-700">
+              <input checked={form.publishOnWebsite} onChange={event => setForm(current => ({ ...current, publishOnWebsite: event.target.checked }))} type="checkbox" />
+              Show this project on the website
+            </label>
+          </FormField>
+          {form.publishOnWebsite ? (
+            <FormField label="Website URL slug" className="sm:col-span-2">
+              <input className="field" onChange={event => setForm(current => ({ ...current, websiteSlug: toWebsiteSlug(event.target.value) }))} placeholder={toWebsiteSlug(form.projectName) || 'project-name'} value={form.websiteSlug} />
+              <p className="mt-1 text-xs text-ink-400">Website page: /properties/{form.websiteSlug || toWebsiteSlug(form.projectName) || 'project-name'}</p>
+            </FormField>
+          ) : null}
           <FormField label="Amenities" className="sm:col-span-2">
             <input className="field" onChange={event => setForm(current => ({ ...current, amenities: event.target.value }))} placeholder="Clubhouse, gym, parking" value={form.amenities} />
           </FormField>
