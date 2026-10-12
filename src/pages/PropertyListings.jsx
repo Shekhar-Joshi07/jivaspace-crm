@@ -43,6 +43,7 @@ const toUnits = value => toLines(value).map(row => {
   const [title = '', area = '', price = ''] = row.split('|').map(part => part.trim());
   return { title, area, price };
 }).filter(unit => unit.title);
+const displayPrice = value => typeof value === 'number' ? formatCurrency(value) : value || 'â€”';
 
 export default function PropertyListings() {
   const [loading, setLoading] = useState(true);
@@ -102,7 +103,7 @@ export default function PropertyListings() {
         ...form,
         title: form.title.trim(),
         location: form.location.trim(),
-        price: Number(form.price),
+        price: form.price.trim(),
         slug: form.slug.trim() || undefined,
         startFrom: form.startFrom.trim() || undefined,
         size: form.size.trim() || undefined,
@@ -179,7 +180,7 @@ export default function PropertyListings() {
       )
     },
     { key: 'type', header: 'Type', render: property => property.type },
-    { key: 'price', header: 'Price', render: property => formatCurrency(property.price) },
+    { key: 'price', header: 'Price', render: property => displayPrice(property.price) },
     { key: 'status', header: 'Availability', render: property => <StatusBadge value={property.status} /> },
     { key: 'website', header: 'Website', render: property => <StatusBadge value={property.isPublished ? 'Published' : 'Draft'} /> },
     {
@@ -228,7 +229,7 @@ function PropertyForm({ busy, form, onUploadImages, setForm }) {
       <FormField label="Website slug" hint="Example: jashn-elevate"><input className="field" maxLength={220} onChange={event => update('slug', event.target.value.toLowerCase().replace(/\s+/g, '-'))} placeholder="jashn-elevate" value={form.slug} /></FormField>
       <FormField label="Property type" required><select className="field" onChange={event => update('type', event.target.value)} value={form.type}>{PROPERTY_LISTING_TYPES.map(type => <option key={type}>{type}</option>)}</select></FormField>
       <FormField label="Location" required><input className="field" maxLength={300} onChange={event => update('location', event.target.value)} required value={form.location} /></FormField>
-      <FormField label="Price" required><input className="field" min="0" onChange={event => update('price', event.target.value)} required type="number" value={form.price} /></FormField>
+      <FormField label="Price range" hint="Example: ₹21 Lac - ₹45 Lac" required><input className="field" inputMode="text" maxLength={100} onChange={event => update('price', event.target.value)} placeholder="₹21 Lac - ₹45 Lac" required type="text" value={form.price} /></FormField>
       <FormField label="Starting from"><input className="field" maxLength={100} onChange={event => update('startFrom', event.target.value)} placeholder="e.g. 65 - 70 Lacs*" value={form.startFrom} /></FormField>
       <FormField label="Size"><input className="field" maxLength={100} onChange={event => update('size', event.target.value)} placeholder="e.g. 1,250 sq ft" value={form.size} /></FormField>
       <FormField label="Bedrooms"><input className="field" min="0" onChange={event => update('bedrooms', event.target.value)} type="number" value={form.bedrooms} /></FormField>
