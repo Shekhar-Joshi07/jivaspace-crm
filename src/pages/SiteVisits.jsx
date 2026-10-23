@@ -1,4 +1,4 @@
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { CalendarPlus, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { getErrorMessage } from '../api/axios';
@@ -12,7 +12,7 @@ import { leadService } from '../services/leadService';
 import { projectService } from '../services/projectService';
 import { siteVisitService } from '../services/siteVisitService';
 import { userService } from '../services/userService';
-import { CRM_ROLES, SITE_VISIT_STATUSES } from '../utils/constants';
+import { CRM_ROLES, SITE_VISIT_FILTER_STATUSES, SITE_VISIT_STATUSES } from '../utils/constants';
 import { formatDate, formatDateTime } from '../utils/formatDate';
 
 const emptyForm = {
@@ -25,6 +25,8 @@ const emptyForm = {
   customerFeedback: '',
   nextFollowUpDate: ''
 };
+
+const recordId = record => record?._id || record?.id || record || '';
 
 export default function SiteVisits() {
   const [loading, setLoading] = useState(true);
@@ -41,6 +43,7 @@ export default function SiteVisits() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [deleting, setDeleting] = useState(null);
+  const [schedulingLead, setSchedulingLead] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -74,14 +77,16 @@ export default function SiteVisits() {
   }, [load]);
 
   const open = visit => {
-    setEditing(visit || null);
+    const isPendingScheduling = Boolean(visit?.isPendingScheduling);
+    setEditing(isPendingScheduling ? null : visit || null);
+    setSchedulingLead(isPendingScheduling ? visit : null);
     setModalOpen(true);
     setForm(visit ? {
-      lead: visit.lead?._id || visit.lead || '',
-      project: visit.project?._id || visit.project || '',
+      lead: recordId(visit.lead),
+      project: recordId(visit.project),
       visitDate: visit.visitDate ? String(visit.visitDate).slice(0, 10) : '',
       visitTime: visit.visitTime || '',
-      assignedSalesPerson: visit.assignedSalesPerson?._id || visit.assignedSalesPerson || '',
+      assignedSalesPerson: recordId(visit.assignedSalesPerson) || recordId(visit.lead?.assignedTo),
       visitStatus: visit.visitStatus || 'Scheduled',
       customerFeedback: visit.customerFeedback || '',
       nextFollowUpDate: visit.nextFollowUpDate ? String(visit.nextFollowUpDate).slice(0, 10) : ''
@@ -102,13 +107,14 @@ export default function SiteVisits() {
         nextFollowUpDate: form.nextFollowUpDate || undefined
       };
       if (editing) {
-        await siteVisitService.update(editing._id, payload);
+        await siteVisitService.update(recordId(editing), payload);
         toast.success('Site visit updated');
       } else {
         await siteVisitService.create(payload);
         toast.success('Site visit created');
       }
       setEditing(null);
+      setSchedulingLead(null);
       setModalOpen(false);
       load();
     } catch (error) {
@@ -121,7 +127,7 @@ export default function SiteVisits() {
   const remove = async () => {
     setBusy(true);
     try {
-      await siteVisitService.remove(deleting._id);
+      await siteVisitService.remove(recordId(deleting));
       toast.success('Site visit deleted');
       setDeleting(null);
       load();
@@ -132,15 +138,55 @@ export default function SiteVisits() {
     }
   };
 
+  const rows = useMemo(() => {
+    const existingLeadIds = new Set(siteVisits.map(visit => String(recordId(visit.lead))));
+    const normalizedSearch = search.trim().toLowerCase();
+    const pendingRows = leads
+      .filter(lead => lead.status === 'Site Visit' && !existingLeadIds.has(String(recordId(lead))))
+      .filter(lead => !status || status === 'Pending Scheduling')
+      .filter(lead => {
+        if (!normalizedSearch) return true;
+        return [
+          lead.customerName,
+          lead.name,
+          lead.mobile,
+          lead.phone,
+          lead.interestedProject?.name,
+          lead.project?.name
+        ].some(value => String(value || '').toLowerCase().includes(normalizedSearch));
+      })
+      .map(lead => ({
+        id: `pending-${recordId(lead)}`,
+        lead: {
+          _id: recordId(lead),
+          name: lead.customerName || lead.name,
+          assignedTo: lead.assignedTo
+        },
+        project: lead.interestedProject || lead.project || null,
+        assignedSalesPerson: lead.assignedTo || null,
+        visitStatus: 'Pending Scheduling',
+        isPendingScheduling: true
+      }));
+
+    return [...pendingRows, ...siteVisits];
+  }, [leads, search, siteVisits, status]);
+
   const columns = useMemo(() => ([
     { key: 'lead', header: 'Lead', render: row => row.lead?.customerName || row.lead?.name || '—' },
     { key: 'project', header: 'Project', render: row => row.project?.projectName || row.project?.name || '—' },
-    { key: 'visitDate', header: 'Visit Date', render: row => formatDate(row.visitDate) },
+    { key: 'visitDate', header: 'Visit Date', render: row => row.isPendingScheduling ? 'Not scheduled' : formatDate(row.visitDate) },
     { key: 'visitTime', header: 'Time', render: row => row.visitTime || '—' },
     { key: 'status', header: 'Status', render: row => <StatusBadge value={row.visitStatus} /> },
     { key: 'assigned', header: 'Assigned to', render: row => row.assignedSalesPerson?.name || '—' },
-    { key: 'updatedAt', header: 'Updated', render: row => formatDateTime(row.updatedAt) },
-    { key: 'actions', header: '', cellClassName: 'w-28', render: row => <div className="flex justify-end gap-1"><button className="icon-button" onClick={() => open(row)} type="button"><Pencil size={17} /></button><button className="icon-button text-red-600 hover:bg-red-50" onClick={() => setDeleting(row)} type="button"><Trash2 size={17} /></button></div> }
+    { key: 'updatedAt', header: 'Updated', render: row => row.isPendingScheduling ? 'Not scheduled' : formatDateTime(row.updatedAt) },
+    {
+      key: 'actions',
+      header: '',
+      cellClassName: 'w-36',
+      render: row => row.isPendingScheduling ? (
+        <button className="btn-secondary min-h-9 px-3 text-xs" onClick={() => open(row)} type="button"><CalendarPlus size={15} /> Schedule</button>
+      ) : <div className="flex justify-end gap-1"><button className="icon-button" onClick={() => open(row)} type="button"><Pencil size={17} /></button><button className="icon-button text-red-600 hover:bg-red-50" onClick={() => setDeleting(row)} type="button"><Trash2 size={17} /></button></div>
+    }
   ]), []);
 
   if (loading) return <Loader fullPage label="Loading site visits…" />;
@@ -159,7 +205,7 @@ export default function SiteVisits() {
           {
             key: 'status',
             label: 'Status',
-            options: SITE_VISIT_STATUSES,
+            options: SITE_VISIT_FILTER_STATUSES,
             value: status,
             allLabel: 'All statuses'
           }
@@ -171,33 +217,33 @@ export default function SiteVisits() {
         searchPlaceholder="Search site visits"
       />
 
-      <DataTable columns={columns} emptyMessage="No site visits found" loading={loading} rows={siteVisits} />
-      <Pagination onPageChange={setPage} pagination={pagination} />
+      <DataTable columns={columns} emptyMessage="No site visits found" loading={loading} rows={rows} />
+      {rows.some(row => row.isPendingScheduling) ? null : <Pagination onPageChange={setPage} pagination={pagination} />}
 
       <Modal
         description="Create or edit a site visit."
         footer={(
           <>
-            <button className="btn-secondary" onClick={() => { setEditing(null); setModalOpen(false); }} type="button">Cancel</button>
-            <button className="btn-primary" disabled={busy || !form.lead || !form.project || !form.visitDate} onClick={save} type="button">{busy ? 'Saving…' : editing ? 'Save changes' : 'Create visit'}</button>
+            <button className="btn-secondary" onClick={() => { setEditing(null); setSchedulingLead(null); setModalOpen(false); }} type="button">Cancel</button>
+            <button className="btn-primary" disabled={busy || !form.lead || !form.project || !form.visitDate} onClick={save} type="button">{busy ? 'Saving…' : editing ? 'Save changes' : schedulingLead ? 'Schedule visit' : 'Create visit'}</button>
           </>
         )}
-        onClose={() => { setEditing(null); setModalOpen(false); }}
+        onClose={() => { setEditing(null); setSchedulingLead(null); setModalOpen(false); }}
         open={modalOpen}
         size="lg"
-        title={editing ? 'Edit site visit' : 'Create site visit'}
+        title={editing ? 'Edit site visit' : schedulingLead ? 'Schedule site visit' : 'Create site visit'}
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField label="Lead" required>
             <select className="field" onChange={event => setForm(current => ({ ...current, lead: event.target.value }))} value={form.lead}>
               <option value="">Select lead</option>
-              {leads.map(lead => <option key={lead._id} value={lead._id}>{lead.customerName || lead.name}</option>)}
+              {leads.map(lead => <option key={recordId(lead)} value={recordId(lead)}>{lead.customerName || lead.name}</option>)}
             </select>
           </FormField>
           <FormField label="Project" required>
             <select className="field" onChange={event => setForm(current => ({ ...current, project: event.target.value }))} value={form.project}>
               <option value="">Select project</option>
-              {projects.map(project => <option key={project._id} value={project._id}>{project.projectName}</option>)}
+              {projects.map(project => <option key={recordId(project)} value={recordId(project)}>{project.projectName || project.name}</option>)}
             </select>
           </FormField>
           <FormField label="Visit date" required>
@@ -209,7 +255,7 @@ export default function SiteVisits() {
           <FormField label="Assigned salesperson">
             <select className="field" onChange={event => setForm(current => ({ ...current, assignedSalesPerson: event.target.value }))} value={form.assignedSalesPerson}>
               <option value="">Select user</option>
-          {users.filter(user => CRM_ROLES.includes(user.role)).map(user => <option key={user._id} value={user._id}>{user.name}</option>)}
+          {users.filter(user => CRM_ROLES.includes(user.role)).map(user => <option key={recordId(user)} value={recordId(user)}>{user.name}</option>)}
             </select>
           </FormField>
           <FormField label="Visit status">

@@ -61,6 +61,7 @@ export const TASK_STATUSES = ['Pending', 'In Progress', 'Completed', 'Cancelled'
 export const PROJECT_STATUSES = ['Upcoming', 'Ongoing', 'Ready to Move', 'Sold Out'];
 export const AVAILABILITY_STATUSES = ['Available', 'Hold', 'Booked', 'Sold'];
 export const SITE_VISIT_STATUSES = ['Scheduled', 'Completed', 'Cancelled', 'Rescheduled', 'No Show'];
+export const SITE_VISIT_FILTER_STATUSES = ['Pending Scheduling', ...SITE_VISIT_STATUSES];
 export const BOOKING_STATUSES = ['Pending', 'Confirmed', 'Cancelled', 'Converted to Sale'];
 
 export const STATUS_STYLES = {
@@ -79,6 +80,7 @@ export const STATUS_STYLES = {
   Completed: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
   Cancelled: 'bg-gray-100 text-gray-600 ring-gray-200',
   Scheduled: 'bg-blue-50 text-blue-700 ring-blue-200',
+  'Pending Scheduling': 'bg-amber-50 text-amber-800 ring-amber-200',
   Rescheduled: 'bg-violet-50 text-violet-700 ring-violet-200',
   'No Show': 'bg-gray-100 text-gray-600 ring-gray-200',
   Confirmed: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
