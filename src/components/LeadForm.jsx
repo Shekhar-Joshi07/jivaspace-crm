@@ -41,7 +41,7 @@ const normalizeLead = lead => ({
   remarks: lead?.remarks || ''
 });
 
-export default function LeadForm({ lead, users = [], projects = [], canAssign = false, onSubmit, busy }) {
+export default function LeadForm({ lead, users = [], projects = [], canAssign = false, canManage = true, onSubmit, busy }) {
   const [form, setForm] = useState(initialState);
 
   useEffect(() => {
@@ -70,12 +70,14 @@ export default function LeadForm({ lead, users = [], projects = [], canAssign = 
       interestedPropertyType: form.interestedPropertyType || undefined,
       budget: form.budget === '' ? undefined : Number(form.budget),
       locationPreference: form.locationPreference.trim() || undefined,
-      status: form.status,
-      priority: form.priority,
-      assignedTo: referenceId(form.assignedTo) || undefined,
       followUpDate: form.followUpDate || undefined,
       remarks: form.remarks.trim() || undefined
     };
+    if (canManage) {
+      payload.status = form.status;
+      payload.priority = form.priority;
+    }
+    if (canAssign) payload.assignedTo = referenceId(form.assignedTo) || undefined;
     onSubmit(payload);
   };
 
@@ -116,16 +118,20 @@ export default function LeadForm({ lead, users = [], projects = [], canAssign = 
       <FormField label="Location preference">
         <input className="field" maxLength={300} name="locationPreference" onChange={change} value={form.locationPreference} />
       </FormField>
-      <FormField label="Status">
-        <select className="field" name="status" onChange={change} value={form.status}>
-          {LEAD_STATUSES.map(status => <option key={status}>{status}</option>)}
-        </select>
-      </FormField>
-      <FormField label="Priority">
-        <select className="field" name="priority" onChange={change} value={form.priority}>
-          {PRIORITIES.map(priority => <option key={priority}>{priority}</option>)}
-        </select>
-      </FormField>
+      {canManage ? (
+        <>
+          <FormField label="Status">
+            <select className="field" name="status" onChange={change} value={form.status}>
+              {LEAD_STATUSES.map(status => <option key={status}>{status}</option>)}
+            </select>
+          </FormField>
+          <FormField label="Priority">
+            <select className="field" name="priority" onChange={change} value={form.priority}>
+              {PRIORITIES.map(priority => <option key={priority}>{priority}</option>)}
+            </select>
+          </FormField>
+        </>
+      ) : null}
       <FormField label="Follow-up date">
         <input className="field" name="followUpDate" onChange={change} type="date" value={form.followUpDate || ''} />
       </FormField>

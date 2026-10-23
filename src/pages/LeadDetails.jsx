@@ -12,7 +12,7 @@ import { activityService } from '../services/activityService';
 import { leadService } from '../services/leadService';
 import { projectService } from '../services/projectService';
 import { userService } from '../services/userService';
-import { ADMIN_ROLES, CRM_ROLES, canManageLeads, canUpdateLeadStatus, LEAD_STATUSES } from '../utils/constants';
+import { ADMIN_ROLES, CRM_ROLES, canEditLeadDetails, canManageLeads, canUpdateLeadStatus, LEAD_STATUSES } from '../utils/constants';
 import { formatDate, formatDateTime } from '../utils/formatDate';
 import { getLeadEmail, getLeadMobile, getLeadName, getLeadOwnerName, getLeadProjectName } from '../utils/leadHelpers';
 
@@ -36,7 +36,8 @@ export default function LeadDetails() {
   const [activity, setActivity] = useState({ type: 'Call', description: '' });
   const [transfer, setTransfer] = useState({ toUser: '', reason: '' });
 
-  const canEdit = canManageLeads(user?.role);
+  const canEdit = canEditLeadDetails(user?.role);
+  const canManage = canManageLeads(user?.role);
   const canTransfer = ADMIN_ROLES.includes(user?.role);
   const canUpdateStatus = canUpdateLeadStatus(user?.role);
   const canInteract = CRM_ROLES.includes(user?.role);
@@ -164,7 +165,7 @@ export default function LeadDetails() {
       <div className="flex items-center justify-between gap-3">
         <Link className="btn-secondary" to="/leads"><ArrowLeft size={17} /> Back to leads</Link>
         <div className="flex flex-wrap gap-2">
-          {canEdit ? <button className="btn-secondary" onClick={() => setEditOpen(true)} type="button"><Pencil size={17} /> Edit</button> : null}
+          {canEdit ? <button className="btn-secondary" onClick={() => setEditOpen(true)} type="button"><Pencil size={17} /> Edit information</button> : null}
           {canInteract ? <button className="btn-secondary" onClick={() => setRemarkOpen(true)} type="button"><StickyNote size={17} /> Add remark</button> : null}
           {canInteract ? <button className="btn-primary" onClick={() => setActivityOpen(true)} type="button"><Clock3 size={17} /> Add activity</button> : null}
           {canTransfer ? <button className="btn-secondary" onClick={() => setTransferOpen(true)} type="button"><Shuffle size={17} /> Transfer</button> : null}
@@ -268,6 +269,7 @@ export default function LeadDetails() {
         <LeadForm
           busy={busy}
           canAssign={canAssignLead(user?.role)}
+          canManage={canManage}
           lead={lead}
           onSubmit={saveLead}
           projects={projects}

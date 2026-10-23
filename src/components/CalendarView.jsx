@@ -9,7 +9,9 @@ const STATUS_TONES = {
   'Not Interested': 'bg-red-100 text-red-800 ring-red-200',
   'Site Visit': 'bg-orange-100 text-orange-800 ring-orange-200',
   Closure: 'bg-emerald-100 text-emerald-800 ring-emerald-200',
-  'Follow-up Needed': 'bg-violet-100 text-violet-800 ring-violet-200'
+  'Follow-up Needed': 'bg-violet-100 text-violet-800 ring-violet-200',
+  Scheduled: 'bg-blue-100 text-blue-800 ring-blue-200',
+  Rescheduled: 'bg-orange-100 text-orange-800 ring-orange-200'
 };
 
 const VIEW_LENGTH = { month: 30, week: 7, day: 1 };
@@ -105,7 +107,7 @@ function EventChip({ event }) {
       to={`/leads/${event.leadId}`}
     >
       <span className="block truncate">{event.customerName}</span>
-      <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.12em] opacity-75">{event.status}</span>
+      <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.12em] opacity-75">{event.eventType ? `${event.eventType} · ${event.status}` : event.status}</span>
     </Link>
   );
 }
@@ -200,7 +202,7 @@ export default function CalendarView({ events = [], loading = false, initialView
                     {date.getDate()}
                   </div>
                   <div className="space-y-1.5">
-                    {dayEvents.slice(0, 2).map(event => <EventChip event={event} key={`${key}-${event.leadId}`} />)}
+                    {dayEvents.slice(0, 2).map(event => <EventChip event={event} key={event.id || `${key}-${event.leadId}`} />)}
                     {dayEvents.length > 2 ? (
                       <div className="rounded-xl bg-brand-50 px-2.5 py-2 text-xs font-bold text-brand-800">
                         +{dayEvents.length - 2} more
@@ -228,7 +230,7 @@ export default function CalendarView({ events = [], loading = false, initialView
                     <span className="rounded-full bg-[#f6ede0] px-3 py-1 text-xs font-bold text-[#7a5a14]">{dayEvents.length} items</span>
                   </div>
                   <div className="mt-4 grid gap-2">
-                    {dayEvents.length ? dayEvents.map(event => <EventChip event={event} key={`${key}-${event.leadId}`} />) : (
+                    {dayEvents.length ? dayEvents.map(event => <EventChip event={event} key={event.id || `${key}-${event.leadId}`} />) : (
                       <div className="rounded-2xl border border-dashed border-line bg-[#fcfbf7] px-4 py-4 text-sm text-ink-500">
                         No follow-up items.
                       </div>

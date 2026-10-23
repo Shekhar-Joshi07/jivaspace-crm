@@ -106,6 +106,7 @@ export const ADMIN_ROLES = ['superadmin', 'admin'];
 export const CRM_ROLES = ['superadmin', 'admin', 'sales_executive'];
 
 export const canManageLeads = role => ADMIN_ROLES.includes(role);
+export const canEditLeadDetails = role => CRM_ROLES.includes(role);
 export const canUpdateLeadStatus = role => CRM_ROLES.includes(role);
 export const canManageUsers = role => role === 'superadmin';
 export const canViewReports = role => ADMIN_ROLES.includes(role);
